@@ -1,35 +1,57 @@
-import { useEffect, useState } from 'react';
-import reactLogo from './assets/react.svg';
-import viteLogo from '/vite.svg';
-import './App.css';
+// import { Route, Routes } from 'react-router-dom';
+// import { Home } from './pages/Home';
+// import { AuthPage } from './pages/AuthPage';
+// import { Header } from './components/Header';
+// import { UserProvider } from './components/UserContext';
 
-export default function App() {
-  const [serverData, setServerData] = useState('');
+// export function App() {
+//   return (
+//     <UserProvider>
+//       <Routes>
+//         <Route path="/" element={<Header text="Todo App" />}>
+//           <Route index element={<Home />} />
+//           <Route path="/sign-up" element={<AuthPage mode="sign-up" />} />
+//           <Route path="/sign-in" element={<AuthPage mode="sign-in" />} />
+//         </Route>
+//       </Routes>
+//     </UserProvider>
+//   );
+// }
 
-  useEffect(() => {
-    async function readServerData() {
-      const resp = await fetch('/api/hello');
-      const data = await resp.json();
+// import { useEffect, useState } from 'react';
+// import reactLogo from './assets/react.svg';
+// import viteLogo from '/vite.svg';
+// import './App.css';
+// import { Router } from 'react-router-dom';
+// import { BrowserRouter } from 'react-router-dom';
 
-      console.log('Data from server:', data);
+// export default function App() {
+//   const [serverData, setServerData] = useState('');
 
-      setServerData(data.message);
-    }
+//   useEffect(() => {
+//     async function readServerData() {
+//       const resp = await fetch('/api/hello');
+//       const data = await resp.json();
 
-    readServerData();
-  }, []);
+//       console.log('Data from server:', data);
 
-  return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank" rel="noreferrer">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank" rel="noreferrer">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>{serverData}</h1>
-    </>
-  );
-}
+//       setServerData(data.message);
+//     }
+
+//     readServerData();
+//   }, []);
+
+//   return (
+//     <>
+//       {/* <Router> */}
+//       <a href="https://vitejs.dev" target="_blank" rel="noreferrer">
+//         <img src={viteLogo} className="logo" alt="Vite logo" />
+//       </a>
+//       <a href="https://react.dev" target="_blank" rel="noreferrer">
+//         <img src={reactLogo} className="logo react" alt="React logo" />
+//       </a>
+//       {/* </Router> */}
+//       <h1>{serverData}</h1>
+//     </>
+//   );
+// }
