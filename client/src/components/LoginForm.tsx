@@ -1,75 +1,75 @@
-// import { type FormEvent, useState } from 'react';
-// import { useNavigate } from 'react-router-dom';
-// import { User } from './UserContext';
-// import { useUser } from './useUser';
+import { type FormEvent, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { User } from './UserContext';
+import { useUser } from './useUser';
 
-// type AuthData = {
-//   user: User;
-//   token: string;
-// };
+type AuthData = {
+  user: User;
+  token: string;
+};
 
-// export function LoginForm() {
-//   const { handleSignIn } = useUser();
-//   const [isLoading, setIsLoading] = useState(false);
-//   const navigate = useNavigate();
+export function LoginForm() {
+  const { handleSignIn } = useUser();
+  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
 
-//   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
-//     event.preventDefault();
-//     try {
-//       setIsLoading(true);
-//       const formData = new FormData(event.currentTarget);
-//       const userData = Object.fromEntries(formData);
-//       const req = {
-//         method: 'POST',
-//         header: { 'Content-Type': 'application/json' },
-//         body: JSON.stringify(userData),
-//       };
-//       const response = await fetch('/api/auth/sign-in', req);
-//       if (!response.ok) {
-//         throw new Error(`fetch error ${response.status}`);
-//       }
-//       const { user, token } = (await response.json()) as AuthData;
-//       handleSignIn(user, token);
-//       navigate('/');
-//     } catch (error) {
-//       alert(`Error signing in ${error}`);
-//     } finally {
-//       setIsLoading(false);
-//     }
-//   }
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    try {
+      setIsLoading(true);
+      const formData = new FormData(event.currentTarget);
+      const userData = Object.fromEntries(formData);
+      const req = {
+        method: 'POST',
+        header: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(userData),
+      };
+      const response = await fetch('/api/auth/sign-in', req);
+      if (!response.ok) {
+        throw new Error(`fetch error ${response.status}`);
+      }
+      const { user, token } = (await response.json()) as AuthData;
+      handleSignIn(user, token);
+      navigate('/');
+    } catch (error) {
+      alert(`Error signing in ${error}`);
+    } finally {
+      setIsLoading(false);
+    }
+  }
 
-//   return (
-//     <div className="container">
-//       <h2 className="text-xl font-bold">Sign In</h2>
-//       <form onSubmit={handleSubmit}>
-//         <div className="flex flex-wrap mb-1">
-//           <div className="w-1/2">
-//             <label className="mb-1 block">
-//               Username
-//               <input
-//                 required
-//                 name="username"
-//                 type="text"
-//                 className="block border border-gray-600 rounded p-2 h-8 w-full mb-2"
-//               />
-//             </label>
-//             <label className="mb-1 block">
-//               Password
-//               <input
-//                 required
-//                 name="password"
-//                 type="password"
-//                 className="block border border-gray-600 rounded p-2 h-8 w-full mb-2"
-//               />
-//             </label>
-//           </div>
-//         </div>
-//         <button
-//           disabled={isLoading}
-//           className="align-middle text-center border rounded py-1 px-3 bg-blue-600 text-white">
-//           Sign In
-//         </button>
-//       </form>
-//     </div>
-//   );
-// }
+  return (
+    <div className="container">
+      <h2 className="text-xl font-bold">Sign In</h2>
+      <form onSubmit={handleSubmit}>
+        <div className="flex flex-wrap mb-1">
+          <div className="w-1/2">
+            <label className="mb-1 block">
+              Username
+              <input
+                required
+                name="username"
+                type="text"
+                className="block border border-gray-600 rounded p-2 h-8 w-full mb-2"
+              />
+            </label>
+            <label className="mb-1 block">
+              Password
+              <input
+                required
+                name="password"
+                type="password"
+                className="block border border-gray-600 rounded p-2 h-8 w-full mb-2"
+              />
+            </label>
+          </div>
+        </div>
+        <button
+          disabled={isLoading}
+          className="align-middle text-center border rounded py-1 px-3 bg-blue-600 text-white">
+          Sign In
+        </button>
+      </form>
+    </div>
+  );
+}
