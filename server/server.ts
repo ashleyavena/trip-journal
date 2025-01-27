@@ -43,7 +43,7 @@ app.post('/api/auth/sign-up', async (req, res, next) => {
     const hashedPassword = await argon2.hash(password);
 
     const sql = `
-    insert into "users" ("username", "hashedPassword)
+    insert into "users" ("username", "hashedPassword")
     values ($1, $2)
     returning "userId", "username", "createdAt";
     `;
@@ -77,6 +77,7 @@ app.post('/api/auth/sign-in', async (req, res, next) => {
 
     const payload = { userId, username };
     const token = jwt.sign(payload, hashKey, { expiresIn: '1h' }); // expiration for login
+    res.status(200).json({ user: { userId, username }, token }); // return generated token to client
   } catch (error) {
     next(error);
   }
