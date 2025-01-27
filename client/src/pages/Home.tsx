@@ -21,7 +21,7 @@ export function Home() {
               <button
                 className="inline-block align-middle text-center border rounded py-1 px-3 bg-blue-600 text-white"
                 onClick={() => navigate('sign-in')}>
-                Sign In
+                Sign In Home.tsx
               </button>
             </div>
           </>
@@ -29,12 +29,12 @@ export function Home() {
         {user && (
           <div className="relative flex-grow flex-1 px-4">
             <button
-              className="inline-block align-middle text-center border rounded py-1 px-3 bg-blue-600 text-white"
+              style={{ padding: '10px', background: 'red', color: 'white' }}
               onClick={() => {
                 handleSignOut();
                 navigate('/');
               }}>
-              Sign Out
+              Log Out home.tsx
             </button>
           </div>
         )}

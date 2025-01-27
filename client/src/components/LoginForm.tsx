@@ -21,12 +21,13 @@ export function LoginForm() {
       const userData = Object.fromEntries(formData);
       const req = {
         method: 'POST',
-        header: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(userData),
       };
       const response = await fetch('/api/auth/sign-in', req);
       if (!response.ok) {
-        throw new Error(`fetch error ${response.status}`);
+        const errorData = await response.json();
+        throw new Error(errorData.error || `fetch error ${response.status}`);
       }
       const { user, token } = (await response.json()) as AuthData;
       handleSignIn(user, token);
@@ -45,7 +46,7 @@ export function LoginForm() {
         <div className="flex flex-wrap mb-1">
           <div className="w-1/2">
             <label className="mb-1 block">
-              Username
+              Username loginform.tsx
               <input
                 required
                 name="username"

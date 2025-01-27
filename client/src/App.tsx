@@ -1,13 +1,14 @@
-import { Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { Home } from './pages/Home';
 import { AuthPage } from './pages/AuthPage';
 import { NavBar } from './components/NavBar';
 import { UserProvider } from './components/UserContext';
 
 import { useEffect, useState } from 'react';
-import reactLogo from './assets/react.svg';
-import viteLogo from '/vite.svg';
+// import reactLogo from './assets/react.svg';
+// import viteLogo from '/vite.svg';
 import './App.css';
+import { TripEntryForm } from './pages/TripEntryForm';
 // import { Router } from 'react-router-dom';
 // import { BrowserRouter } from 'react-router-dom';
 
@@ -29,14 +30,17 @@ export default function App() {
 
   return (
     <UserProvider>
-      <Routes>
-        <Route path="/" element={<NavBar />}>
-          <Route index element={<Home />} />
-          <Route path="/sign-up" element={<AuthPage mode="sign-up" />} />
-          <Route path="/sign-in" element={<AuthPage mode="sign-in" />} />
-        </Route>
-      </Routes>
-
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<NavBar />}>
+            <Route index element={<Home />} />
+            <Route path="/sign-up" element={<AuthPage mode="sign-up" />} />
+            <Route path="/sign-in" element={<AuthPage mode="sign-in" />} />
+            <Route path="/trips/:tripId" element={<TripEntryForm />} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
+      {/*
       <div className="logos-container">
         <a href="https://vitejs.dev" target="_blank" rel="noreferrer">
           <img src={viteLogo} className="logo" alt="Vite logo" />
@@ -44,7 +48,7 @@ export default function App() {
         <a href="https://react.dev" target="_blank" rel="noreferrer">
           <img src={reactLogo} className="logo react" alt="React logo" />
         </a>
-      </div>
+      </div> */}
 
       <h1>{serverData}</h1>
     </UserProvider>
