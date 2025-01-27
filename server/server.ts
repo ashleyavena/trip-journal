@@ -51,12 +51,12 @@ app.post('/api/auth/sign-up', async (req, res, next) => {
       throw new ClientError(400, 'username and password are required fields');
     }
 
-    const hashedPassword = await argon2.hash(password);
+    const hashedPassword = await argon2.hash(password); // Correctly hash the password
 
     const sql = `
-    insert into "users" ("username", "hashedPassword")
-    values ($1, $2)
-    returning "userId", "username", "createdAt";
+      insert into "Users" ("username", "hashedPassword")
+      values ($1, $2)
+      returning "userId", "username", "createdAt";
     `;
     const result = await db.query<User>(sql, [username, hashedPassword]);
     res.status(201).json(result.rows[0]);
@@ -75,17 +75,21 @@ app.post('/api/auth/sign-in', async (req, res, next) => {
 
     const sql = `
     select "userId", "hashedPassword"
-    from "users"
+    from "Users"
     where "username" =$1;
     `;
+    console.log('Executing SQL query:', sql);
+    console.log('With parameters:', [username]);
+
     const result = await db.query<User>(sql, [username]);
     const user = result.rows[0];
     if (!user) {
       throw new ClientError(400, 'invalid login');
     }
     const { userId, hashedPassword } = user;
-    if (!(await argon2.verify(hashedPassword, password)))
-      throw new ClientError(401, 'invalid login');
+    console.log('Hashed password from database:', hashedPassword); // Log the password hash
+    const isPasswordValid = await argon2.verify(hashedPassword, password);
+    if (!isPasswordValid) throw new ClientError(401, 'invalid login');
 
     const payload = { userId, username };
     const token = jwt.sign(payload, hashKey, { expiresIn: '1h' }); // expiration for login
@@ -111,7 +115,7 @@ app.post('/api/trips', authMiddleware, async (req, res, next) => {
 
     const sql = `
     insert into "Trips" ("userId", "title", "description", "startDate", "endDate")
-    values ($1,$2,$3,$4,$5)
+    values ($1, $2, $3, $4, $5)
     returning *;
     `;
     const params = [userId, title, description, startDate, endDate];
