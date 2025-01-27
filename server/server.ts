@@ -3,13 +3,23 @@ import 'dotenv/config';
 import express from 'express';
 import pg from 'pg';
 import jwt from 'jsonwebtoken';
-import { ClientError, errorMiddleware } from './lib/index.js';
+import { authMiddleware, ClientError, errorMiddleware } from './lib/index.js';
 import argon2 from 'argon2';
+import { nextTick } from 'process';
 
 type User = {
   userId: number;
   username: string;
   hashedPassword: string;
+};
+
+type Trips = {
+  tripId: number;
+  userId: number;
+  title: string;
+  description: string;
+  startDate: number;
+  endDate: number;
 };
 
 const db = new pg.Pool({
@@ -33,6 +43,7 @@ app.use(express.static(reactStaticDir));
 app.use(express.static(uploadsStaticDir));
 app.use(express.json());
 
+// api to sign up
 app.post('/api/auth/sign-up', async (req, res, next) => {
   try {
     const { username, password } = req.body;
@@ -54,6 +65,7 @@ app.post('/api/auth/sign-up', async (req, res, next) => {
   }
 });
 
+// api to sign-in
 app.post('/api/auth/sign-in', async (req, res, next) => {
   try {
     const { username, password } = req.body;
@@ -83,8 +95,31 @@ app.post('/api/auth/sign-in', async (req, res, next) => {
   }
 });
 
-app.post('/api/auth/sign-out', (req, res) => {
+// api to log out
+
+app.post('/api/auth/sign-out', (req, res, next) => {
   res.status(200).json({ message: 'logged out successfully' });
+});
+
+// api to create trip entry backend
+app.post('/api/trips', authMiddleware, async (req, res, next) => {
+  try {
+    const { userId, title, description, startDate, endDate } = req.body;
+    if (!userId || !title || !startDate) {
+      throw new ClientError(400, 'title and start date are required fields');
+    }
+
+    const sql = `
+    insert into "Trips" ("userId", "title", "description", "startDate", "endDate")
+    values ($1,$2,$3,$4,$5)
+    returning *;
+    `;
+    const params = [userId, title, description, startDate, endDate];
+    const result = await db.query<Trips>(sql, params);
+    res.status(201).json(result.rows[0]);
+  } catch (error) {
+    next(error);
+  }
 });
 
 app.get('/api/hello', (req, res) => {
