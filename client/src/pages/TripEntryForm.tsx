@@ -2,8 +2,8 @@ import { FormEvent, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
   type Entry,
-  addEntry,
-  readEntry,
+  addTrip,
+  readTrip,
   removeEntry,
   updateEntry,
 } from '../lib/data';
@@ -28,10 +28,10 @@ export function TripEntryForm() {
     async function load(id: number) {
       setIsLoading(true);
       try {
-        const entry = await readEntry(id);
+        const entry = await readTrip(id);
         if (!entry) throw new Error(`Entry with ID ${id} not found`);
         setEntry(entry);
-        setPhotoUrl(entry.photoUrl);
+        // setPhotoUrl(entry.photoUrl);
       } catch (err) {
         setError(err);
       } finally {
@@ -49,7 +49,7 @@ export function TripEntryForm() {
       if (isEditing) {
         updateEntry({ ...entry, ...newEntry });
       } else {
-        addEntry(newEntry);
+        addTrip(newEntry);
       }
       navigate('/');
     } catch (error) {
@@ -108,7 +108,7 @@ export function TripEntryForm() {
               Photo URL
               <input
                 name="photoUrl"
-                defaultValue={entry?.photoUrl ?? ''}
+                // defaultValue={entry?.photoUrl ?? ''}
                 required
                 className="input-b-color text-padding input-b-radius purple-outline input-height margin-bottom-2 d-block width-100"
                 type="text"
