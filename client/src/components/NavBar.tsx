@@ -1,5 +1,9 @@
 import { LogOut } from './LogOut';
-import { Link, Outlet } from 'react-router-dom';
+// <<<<<<< create-an-entry
+// import { Link, Outlet } from 'react-router-dom';
+// =======
+// import { Outlet } from 'react-router-dom';
+// >>>>>>> main
 
 export function NavBar() {
   return (
@@ -26,15 +30,7 @@ export function NavBar() {
         </div>
       </header>
 
-      <nav>
-        <Link to="/" className="nav-link">
-          <h3>Home nb</h3>
-        </Link>
-        <Link to="/dashboard" className="nav-link">
-          <h3>Dashboard nb</h3>
-        </Link>
-        <LogOut />
-      </nav>
+<!--       <nav>
 
       <Outlet />
     </>
