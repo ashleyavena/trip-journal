@@ -126,6 +126,44 @@ app.post('/api/trips', authMiddleware, async (req, res, next) => {
   }
 });
 
+// api to get all trip entries backend
+app.get('/api/trips', authMiddleware, async (req, res, next) => {
+  try {
+    const userId = req.user?.userId;
+    const sql = `
+      select *
+        from "Trips"
+        where "userId" = $1;
+    `;
+    const params = [userId];
+    const result = await db.query<Trips>(sql, params);
+    res.json(result.rows);
+  } catch (err) {
+    next(err);
+  }
+});
+
+// api to get single trip entry backend
+app.get('/api/trips/:tripId', authMiddleware, async (req, res, next) => {
+  try {
+    const { tripId } = req.params;
+    if (!Number.isInteger(+tripId)) {
+      throw new ClientError(400, 'Invalid entry');
+    }
+    const sql = `
+      select * from "Trips"
+      where "tripId" = $1 and "userId"= $2;
+    `;
+    const params = [tripId, req.user?.userId];
+    const result = await db.query(sql, params);
+    const trip = result.rows[0];
+    if (!trip) throw new ClientError(404, 'Entry not found');
+    res.json(trip);
+  } catch (err) {
+    next(err);
+  }
+});
+
 app.get('/api/hello', (req, res) => {
   res.json({ message: 'Hello, World!' });
 });
