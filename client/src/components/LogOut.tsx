@@ -14,8 +14,8 @@ export function LogOut() {
   return (
     <button
       onClick={handleLogout}
-      style={{ padding: '10px', background: 'red', color: 'white' }}>
-      Log Out
+      style={{ padding: '10px', background: 'grey', color: 'white' }}>
+      Log Out tsx
     </button>
   );
 }

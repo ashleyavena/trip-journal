@@ -5,9 +5,10 @@ import { NavBar } from './components/NavBar';
 import { UserProvider } from './components/UserContext';
 
 import { useEffect, useState } from 'react';
-import reactLogo from './assets/react.svg';
-import viteLogo from '/vite.svg';
+// import reactLogo from './assets/react.svg';
+// import viteLogo from '/vite.svg';
 import './App.css';
+
 
 export default function App() {
   const [serverData, setServerData] = useState('');
@@ -33,9 +34,6 @@ export default function App() {
             <Route index element={<Home />} />
             <Route path="/sign-up" element={<AuthPage mode="sign-up" />} />
             <Route path="/sign-in" element={<AuthPage mode="sign-in" />} />
-          </Route>
-        </Routes>
-      </BrowserRouter>
 
       <div className="logos-container">
         <a href="https://vitejs.dev" target="_blank" rel="noreferrer">
@@ -44,7 +42,7 @@ export default function App() {
         <a href="https://react.dev" target="_blank" rel="noreferrer">
           <img src={reactLogo} className="logo react" alt="React logo" />
         </a>
-      </div>
+      </div> */}
 
       <h1>{serverData}</h1>
     </UserProvider>

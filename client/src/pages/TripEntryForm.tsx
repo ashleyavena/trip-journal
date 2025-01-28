@@ -4,6 +4,7 @@ import {
   type Entry,
   addTrip,
   readTrip,
+  readUser,
   removeEntry,
   updateEntry,
 } from '../lib/data';
@@ -42,15 +43,23 @@ export function TripEntryForm() {
   }, [tripId, isEditing]);
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
     try {
-      event.preventDefault();
       const formData = new FormData(event.currentTarget);
       const newEntry = Object.fromEntries(formData) as unknown as Entry;
+      const userId = readUser()?.userId;
+      if (!userId) {
+        alert('User is not authenticated. Please log in again.');
+        navigate('/login'); // Redirect to login page
+        return;
+      }
+
       if (isEditing) {
         updateEntry({ ...entry, ...newEntry });
       } else {
         addTrip(newEntry);
       }
+      alert('a new post was made!');
       navigate('/');
     } catch (error) {
       alert('there was an error updating entry' + error);
