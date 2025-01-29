@@ -79,18 +79,31 @@ export async function readTrip(tripId: number): Promise<Entry | undefined> {
 }
 
 export async function addTrip(newEntry: Entry) {
-  const userId = readUser()?.userId; // Get the userId dynamically from context
+  const userId = readUser()?.userId;
   if (!userId) {
     throw new Error('User is not authenticated');
   }
 
+  const { title, startDate, endDate } = newEntry;
+  if (!title || !startDate || !endDate) {
+    throw new Error('Title, start date, and end date are required fields.');
+  }
+  if (
+    isNaN(new Date(startDate).getTime()) ||
+    isNaN(new Date(endDate).getTime())
+  ) {
+    throw new Error('Invalid date format');
+  }
+
   const entryData = {
     ...newEntry,
-    userId, // Ensure userId is included when creating a trip
+    userId,
+    startDate: new Date(startDate),
+    endDate: new Date(endDate),
   };
 
   console.log('userId', userId);
-  console.log('Sending trip data:', entryData); // Log the request payload
+  console.log('Sending trip data:', entryData);
 
   const response = await fetch('/api/trips', {
     method: 'POST',

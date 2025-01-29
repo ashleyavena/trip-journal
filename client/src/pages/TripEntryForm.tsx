@@ -18,7 +18,7 @@ import {
 export function TripEntryForm() {
   const { tripId } = useParams();
   const [entry, setEntry] = useState<Entry>();
-  const [photoUrl, setPhotoUrl] = useState<string>();
+  const [photoUrl, setPhotoUrl] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<unknown>();
   const [isDeleting, setIsDeleting] = useState(false);
@@ -32,7 +32,7 @@ export function TripEntryForm() {
         const entry = await readTrip(id);
         if (!entry) throw new Error(`Entry with ID ${id} not found`);
         setEntry(entry);
-        // setPhotoUrl(entry.photoUrl);
+        setPhotoUrl(entry.photoUrl);
       } catch (err) {
         setError(err);
       } finally {
@@ -47,6 +47,7 @@ export function TripEntryForm() {
     try {
       const formData = new FormData(event.currentTarget);
       const newEntry = Object.fromEntries(formData) as unknown as Entry;
+      newEntry.photoUrl = photoUrl;
       const userId = readUser()?.userId;
       if (!userId) {
         alert('User is not authenticated. Please log in again.');
@@ -60,7 +61,7 @@ export function TripEntryForm() {
         addTrip(newEntry);
       }
       alert('a new post was made!');
-      navigate('/');
+      navigate('/trips');
     } catch (error) {
       alert('there was an error updating entry' + error);
     }
@@ -70,7 +71,7 @@ export function TripEntryForm() {
     try {
       if (!entry?.tripId) throw new Error('Should never happen');
       removeEntry(entry.tripId);
-      navigate('/');
+      navigate('/trips');
     } catch (error) {
       alert('there was an error deleting entry' + error);
     }
@@ -123,12 +124,22 @@ export function TripEntryForm() {
                 className="input-b-color text-padding input-b-radius purple-outline input-height margin-bottom-2 d-block width-100"
               />
             </label>
+            <label className="margin-bottom-1 d-block">
+              End Date
+              <input
+                name="endDate"
+                type="date"
+                defaultValue={entry?.endDate ?? ''}
+                required
+                className="input-b-color text-padding input-b-radius purple-outline input-height margin-bottom-2 d-block width-100"
+              />
+            </label>
 
             <label className="margin-bottom-1 d-block">
               Photo URL
               <input
                 name="photoUrl"
-                // defaultValue={entry?.photoUrl ?? ''}
+                defaultValue={entry?.photoUrl ?? ''}
                 required
                 className="input-b-color text-padding input-b-radius purple-outline input-height margin-bottom-2 d-block width-100"
                 type="text"

@@ -69,7 +69,7 @@ function EntryCard({ entry }: EntryProps) {
           <img
             className="input-b-radius form-image"
             src={entry.photoUrl}
-            alt=""
+            alt="entry"
           />
         </div>
         <div className="column-half">

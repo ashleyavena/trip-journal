@@ -12,7 +12,7 @@ export function Home() {
               <Link to="/trips" className="entries-link white-text">
                 <h3>Entries hm</h3>
               </Link>
-              <Link to="/trips/new" className="entries-link white-text">
+              <Link to="/details/new" className="entries-link white-text">
                 <h3>New Entry hm</h3>
               </Link>
             </div>

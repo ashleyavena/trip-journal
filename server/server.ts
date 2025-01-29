@@ -18,8 +18,8 @@ type Trips = {
   userId: number;
   title: string;
   description: string;
-  startDate: number;
-  endDate: number;
+  startDate: string;
+  endDate: string;
 };
 
 const db = new pg.Pool({
@@ -108,13 +108,21 @@ app.post('/api/auth/sign-out', (req, res, next) => {
 // api to create trip entry backend
 app.post('/api/trips', authMiddleware, async (req, res, next) => {
   try {
-    const { userId, title, description, startDate, endDate } = req.body;
-    if (!userId || !title) {
+    const { userId, title, photoUrl, description, startDate, endDate } =
+      req.body;
+    if (!userId || !title || !photoUrl) {
       throw new ClientError(400, 'title and start date are required fields');
     }
-    if (!startDate || !endDate || isNaN(startDate) || isNaN(endDate)) {
+    if (
+      !startDate ||
+      !endDate ||
+      isNaN(new Date(startDate).getTime()) ||
+      isNaN(new Date(endDate).getTime())
+    ) {
       throw new ClientError(400, 'Invalid date format');
     }
+
+    console.log('req body:', req.body);
 
     const sql = `
     insert into "Trips" ("userId", "title", "description", "startDate", "endDate")
