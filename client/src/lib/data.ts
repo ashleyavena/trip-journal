@@ -7,7 +7,9 @@ export type Entry = {
   userId?: number;
   title: string;
   description: string;
-  photoUrl?: string;
+  photoUrl: string;
+  startDate: number;
+  endDate: number;
 };
 
 const authKey = 'um.auth';
@@ -34,6 +36,7 @@ export function readUser(): User | undefined {
 }
 
 export function readToken(): string | undefined {
+  console.log('token from storage', localStorage.getItem(authKey));
   const auth = localStorage.getItem(authKey);
   if (!auth) return undefined;
   return (JSON.parse(auth) as Auth).token;
@@ -61,8 +64,8 @@ export async function readTrips(): Promise<Entry[]> {
   return trips as Entry[];
 }
 
-export async function readTrip(entryId: number): Promise<Entry | undefined> {
-  const response = await fetch(`/api/trips/${entryId}`, {
+export async function readTrip(tripId: number): Promise<Entry | undefined> {
+  const response = await fetch(`/api/trips/${tripId}`, {
     method: 'GET',
     headers: {
       Authorization: `Bearer ${readToken()}`,
@@ -85,6 +88,10 @@ export async function addTrip(newEntry: Entry) {
     ...newEntry,
     userId, // Ensure userId is included when creating a trip
   };
+
+  console.log('userId', userId);
+  console.log('Sending trip data:', entryData); // Log the request payload
+
   const response = await fetch('/api/trips', {
     method: 'POST',
     headers: {

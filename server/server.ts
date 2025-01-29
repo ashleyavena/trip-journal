@@ -109,8 +109,11 @@ app.post('/api/auth/sign-out', (req, res, next) => {
 app.post('/api/trips', authMiddleware, async (req, res, next) => {
   try {
     const { userId, title, description, startDate, endDate } = req.body;
-    if (!userId || !title || !startDate) {
+    if (!userId || !title) {
       throw new ClientError(400, 'title and start date are required fields');
+    }
+    if (!startDate || !endDate || isNaN(startDate) || isNaN(endDate)) {
+      throw new ClientError(400, 'Invalid date format');
     }
 
     const sql = `
@@ -129,14 +132,12 @@ app.post('/api/trips', authMiddleware, async (req, res, next) => {
 // api to get all trip entries backend
 app.get('/api/trips', authMiddleware, async (req, res, next) => {
   try {
-    const userId = req.user?.userId;
     const sql = `
       select *
         from "Trips"
         where "userId" = $1;
     `;
-    const params = [userId];
-    const result = await db.query<Trips>(sql, params);
+    const result = await db.query<Trips>(sql, [req.user?.userId]);
     res.json(result.rows);
   } catch (err) {
     next(err);
@@ -164,8 +165,48 @@ app.get('/api/trips/:tripId', authMiddleware, async (req, res, next) => {
   }
 });
 
-app.get('/api/hello', (req, res) => {
-  res.json({ message: 'Hello, World!' });
+app.put('/api/trips/:tripId', authMiddleware, async (req, res, next) => {
+  try {
+    const { tripId } = req.params;
+    const { title, description, startDate, endDate } = req.body;
+    const sql = `
+      UPDATE "Trips"
+      SET "title" = $1, "description" = $2, "startDate" = $3, "endDate" = $4
+      WHERE "tripId" = $5 AND "userId" = $6
+      RETURNING *;
+    `;
+    const params = [
+      title,
+      description,
+      startDate,
+      endDate,
+      tripId,
+      req.user?.userId,
+    ];
+    const result = await db.query(sql, params);
+    if (!result.rows.length)
+      throw new ClientError(404, 'Trip not found or unauthorized');
+    res.json(result.rows[0]);
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.delete('/api/trips/:tripId', authMiddleware, async (req, res, next) => {
+  try {
+    const { tripId } = req.params;
+    const sql = `
+      DELETE FROM "Trips"
+      WHERE "tripId" = $1 AND "userId" = $2
+      RETURNING *;
+    `;
+    const result = await db.query(sql, [tripId, req.user?.userId]);
+    if (!result.rows.length)
+      throw new ClientError(404, 'Trip not found or unauthorized');
+    res.status(204).send();
+  } catch (error) {
+    next(error);
+  }
 });
 
 /*

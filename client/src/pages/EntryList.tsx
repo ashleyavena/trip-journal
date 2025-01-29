@@ -3,16 +3,17 @@ import { Link } from 'react-router-dom';
 import { FaPencilAlt } from 'react-icons/fa';
 import { Entry, readTrips } from '../lib/data';
 
-export function TripList() {
-  const [trips, setTrips] = useState<Entry[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+export function EntryList() {
+  const [entries, setEntries] = useState<Entry[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<unknown>();
 
   useEffect(() => {
     async function load() {
+      setIsLoading(true);
       try {
-        const trips = await readTrips();
-        setTrips(trips);
+        const entries = await readTrips();
+        setEntries(entries);
       } catch (err) {
         setError(err);
       } finally {
@@ -26,7 +27,7 @@ export function TripList() {
   if (error) {
     return (
       <div>
-        Error Loading Trips:{' '}
+        Error Loading Entries:{' '}
         {error instanceof Error ? error.message : 'Unknown Error'}
       </div>
     );
@@ -36,7 +37,7 @@ export function TripList() {
     <div className="container">
       <div className="row">
         <div className="column-full d-flex justify-between align-center">
-          <h1>Trips</h1>
+          <h1>Entries</h1>
           <h3>
             <Link to="/details/new" className="white-text form-link">
               NEW
@@ -46,9 +47,9 @@ export function TripList() {
       </div>
       <div className="row">
         <div className="column-full">
-          <ul className="trip-ul">
-            {trips.map((trip) => (
-              <TripCard key={trip.tripId} trip={trip} />
+          <ul className="entry-ul">
+            {entries.map((entry) => (
+              <EntryCard key={entry.tripId} entry={entry} />
             ))}
           </ul>
         </div>
@@ -57,35 +58,30 @@ export function TripList() {
   );
 }
 
-type TripProps = {
-  trip: Entry;
+type EntryProps = {
+  entry: Entry;
 };
-
-function TripCard({ trip }: TripProps) {
+function EntryCard({ entry }: EntryProps) {
   return (
     <li>
       <div className="row">
         <div className="column-half">
-          {trip.photoUrl ? (
-            <img
-              className="input-b-radius form-image"
-              src={trip.photoUrl}
-              alt={trip.title || 'Trip Photo'}
-            />
-          ) : (
-            <div className="no-photo-placeholder">No Photo</div>
-          )}
+          <img
+            className="input-b-radius form-image"
+            src={entry.photoUrl}
+            alt=""
+          />
         </div>
         <div className="column-half">
           <div className="row">
             <div className="column-full d-flex justify-between">
-              <h3>{trip.title}</h3>
-              <Link to={`details/${trip.tripId}`}>
+              <h3>{entry.title}</h3>
+              <Link to={`/details/${entry.tripId}`}>
                 <FaPencilAlt />
               </Link>
             </div>
           </div>
-          <p>{trip.description || 'No description available.'}</p>
+          <p>{entry.description}</p>
         </div>
       </div>
     </li>
