@@ -3,13 +3,23 @@ import 'dotenv/config';
 import express from 'express';
 import pg from 'pg';
 import jwt from 'jsonwebtoken';
-import { ClientError, errorMiddleware } from './lib/index.js';
+import { authMiddleware, ClientError, errorMiddleware } from './lib/index.js';
 import argon2 from 'argon2';
+import { nextTick } from 'process';
 
 type User = {
   userId: number;
   username: string;
   hashedPassword: string;
+};
+
+type Trips = {
+  tripId: number;
+  userId: number;
+  title: string;
+  description: string;
+  startDate: number;
+  endDate: number;
 };
 
 const db = new pg.Pool({
@@ -33,6 +43,7 @@ app.use(express.static(reactStaticDir));
 app.use(express.static(uploadsStaticDir));
 app.use(express.json());
 
+// api to sign up
 app.post('/api/auth/sign-up', async (req, res, next) => {
   try {
     const { username, password } = req.body;
@@ -40,12 +51,12 @@ app.post('/api/auth/sign-up', async (req, res, next) => {
       throw new ClientError(400, 'username and password are required fields');
     }
 
-    const hashedPassword = await argon2.hash(password);
+    const hashedPassword = await argon2.hash(password); // Correctly hash the password
 
     const sql = `
-    insert into "users" ("username", "hashedPassword")
-    values ($1, $2)
-    returning "userId", "username", "createdAt";
+      insert into "Users" ("username", "hashedPassword")
+      values ($1, $2)
+      returning "userId", "username", "createdAt";
     `;
     const result = await db.query<User>(sql, [username, hashedPassword]);
     res.status(201).json(result.rows[0]);
@@ -54,6 +65,7 @@ app.post('/api/auth/sign-up', async (req, res, next) => {
   }
 });
 
+// api to sign-in
 app.post('/api/auth/sign-in', async (req, res, next) => {
   try {
     const { username, password } = req.body;
@@ -63,17 +75,21 @@ app.post('/api/auth/sign-in', async (req, res, next) => {
 
     const sql = `
     select "userId", "hashedPassword"
-    from "users"
+    from "Users"
     where "username" =$1;
     `;
+    console.log('Executing SQL query:', sql);
+    console.log('With parameters:', [username]);
+
     const result = await db.query<User>(sql, [username]);
     const user = result.rows[0];
     if (!user) {
       throw new ClientError(400, 'invalid login');
     }
     const { userId, hashedPassword } = user;
-    if (!(await argon2.verify(hashedPassword, password)))
-      throw new ClientError(401, 'invalid login');
+    console.log('Hashed password from database:', hashedPassword); // Log the password hash
+    const isPasswordValid = await argon2.verify(hashedPassword, password);
+    if (!isPasswordValid) throw new ClientError(401, 'invalid login');
 
     const payload = { userId, username };
     const token = jwt.sign(payload, hashKey, { expiresIn: '1h' }); // expiration for login
@@ -83,8 +99,69 @@ app.post('/api/auth/sign-in', async (req, res, next) => {
   }
 });
 
-app.post('/api/auth/sign-out', (req, res) => {
+// api to log out
+
+app.post('/api/auth/sign-out', (req, res, next) => {
   res.status(200).json({ message: 'logged out successfully' });
+});
+
+// api to create trip entry backend
+app.post('/api/trips', authMiddleware, async (req, res, next) => {
+  try {
+    const { userId, title, description, startDate, endDate } = req.body;
+    if (!userId || !title || !startDate) {
+      throw new ClientError(400, 'title and start date are required fields');
+    }
+
+    const sql = `
+    insert into "Trips" ("userId", "title", "description", "startDate", "endDate")
+    values ($1, $2, $3, $4, $5)
+    returning *;
+    `;
+    const params = [userId, title, description, startDate, endDate];
+    const result = await db.query<Trips>(sql, params);
+    res.status(201).json(result.rows[0]);
+  } catch (error) {
+    next(error);
+  }
+});
+
+// api to get all trip entries backend
+app.get('/api/trips', authMiddleware, async (req, res, next) => {
+  try {
+    const userId = req.user?.userId;
+    const sql = `
+      select *
+        from "Trips"
+        where "userId" = $1;
+    `;
+    const params = [userId];
+    const result = await db.query<Trips>(sql, params);
+    res.json(result.rows);
+  } catch (err) {
+    next(err);
+  }
+});
+
+// api to get single trip entry backend
+app.get('/api/trips/:tripId', authMiddleware, async (req, res, next) => {
+  try {
+    const { tripId } = req.params;
+    if (!Number.isInteger(+tripId)) {
+      throw new ClientError(400, 'Invalid entry');
+    }
+    const sql = `
+      select * from "Trips"
+      where "tripId" = $1 and "userId"= $2;
+    `;
+    const params = [tripId, req.user?.userId];
+    const result = await db.query(sql, params);
+    const trip = result.rows[0];
+    if (!trip) throw new ClientError(404, 'Entry not found');
+    res.json(trip);
+  } catch (err) {
+    next(err);
+  }
 });
 
 app.get('/api/hello', (req, res) => {
