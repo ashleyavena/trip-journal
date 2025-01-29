@@ -114,6 +114,17 @@ export function TripEntryForm() {
               />
             </label>
             <label className="margin-bottom-1 d-block">
+              Start Date
+              <input
+                name="startDate"
+                type="date"
+                defaultValue={entry?.startDate ?? ''}
+                required
+                className="input-b-color text-padding input-b-radius purple-outline input-height margin-bottom-2 d-block width-100"
+              />
+            </label>
+
+            <label className="margin-bottom-1 d-block">
               Photo URL
               <input
                 name="photoUrl"
@@ -129,7 +140,7 @@ export function TripEntryForm() {
         <div className="row margin-bottom-1">
           <div className="column-full">
             <label className="margin-bottom-1 d-block">
-              Notes
+              Description
               <textarea
                 name="notes"
                 defaultValue={entry?.description ?? ''}
