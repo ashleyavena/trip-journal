@@ -3,13 +3,8 @@ import { Home } from './pages/Home';
 import { AuthPage } from './pages/AuthPage';
 import { NavBar } from './components/NavBar';
 import { UserProvider } from './components/UserContext';
-
 import { useEffect, useState } from 'react';
-import reactLogo from './assets/react.svg';
-import viteLogo from '/vite.svg';
 import './App.css';
-// import { Router } from 'react-router-dom';
-// import { BrowserRouter } from 'react-router-dom';
 
 export default function App() {
   const [serverData, setServerData] = useState('');
@@ -36,17 +31,6 @@ export default function App() {
           <Route path="/sign-in" element={<AuthPage mode="sign-in" />} />
         </Route>
       </Routes>
-
-      <div className="logos-container">
-        <a href="https://vitejs.dev" target="_blank" rel="noreferrer">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank" rel="noreferrer">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-
-      <h1>{serverData}</h1>
     </UserProvider>
   );
 }

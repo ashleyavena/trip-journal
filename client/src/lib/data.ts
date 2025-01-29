@@ -93,7 +93,10 @@ export async function addTrip(newEntry: Entry) {
     },
     body: JSON.stringify(entryData),
   });
-  if (!response.ok) throw new Error(`response status ${response.status}`);
+  if (!response.ok)
+    throw new Error(
+      `Failed to create trip. Response status ${response.status}`
+    );
   const data = (await response.json()) as Entry;
   return data;
 }
