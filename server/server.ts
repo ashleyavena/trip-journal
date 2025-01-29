@@ -121,17 +121,29 @@ app.post('/api/trips', authMiddleware, async (req, res, next) => {
     ) {
       throw new ClientError(400, 'Invalid date format');
     }
-
     console.log('req body:', req.body);
 
-    const sql = `
+    const tripSql = `
     insert into "Trips" ("userId", "title", "description", "startDate", "endDate")
     values ($1, $2, $3, $4, $5)
+    returning "tripId";
+    `; // separate queries to join trips and photo tables
+    const tripParams = [userId, title, description, startDate, endDate];
+    const tripResult = await db.query<Trips>(tripSql, tripParams);
+    const tripId = tripResult.rows[0].tripId;
+
+    const photoSql = `
+    insert into "Photos" ("tripId", "photoUrl")
+    values ($1,$2)
     returning *;
     `;
-    const params = [userId, title, description, startDate, endDate];
-    const result = await db.query<Trips>(sql, params);
-    res.status(201).json(result.rows[0]);
+
+    const photoParams = [tripId, photoUrl];
+    const photoResult = await db.query(photoSql, photoParams);
+
+    res
+      .status(201)
+      .json({ trip: tripResult.rows[0], photo: photoResult.rows[0].photoUrl });
   } catch (error) {
     next(error);
   }
@@ -141,9 +153,10 @@ app.post('/api/trips', authMiddleware, async (req, res, next) => {
 app.get('/api/trips', authMiddleware, async (req, res, next) => {
   try {
     const sql = `
-      select *
-        from "Trips"
-        where "userId" = $1;
+      select t.*, p."photoUrl"
+        from "Trips" t
+        left join "Photos" p on t."tripId" = p."tripId"
+      where t."userId" = $1;
     `;
     const result = await db.query<Trips>(sql, [req.user?.userId]);
     res.json(result.rows);
@@ -160,8 +173,10 @@ app.get('/api/trips/:tripId', authMiddleware, async (req, res, next) => {
       throw new ClientError(400, 'Invalid entry');
     }
     const sql = `
-      select * from "Trips"
-      where "tripId" = $1 and "userId"= $2;
+      select t.*, p."photoUrl"
+      from "Trips" t
+      left join "Photos" p on t."tripId" = p."tripId"
+      where t."tripId" = $1 and t."userId" = $2;
     `;
     const params = [tripId, req.user?.userId];
     const result = await db.query(sql, params);
@@ -178,10 +193,10 @@ app.put('/api/trips/:tripId', authMiddleware, async (req, res, next) => {
     const { tripId } = req.params;
     const { title, description, startDate, endDate } = req.body;
     const sql = `
-      UPDATE "Trips"
-      SET "title" = $1, "description" = $2, "startDate" = $3, "endDate" = $4
-      WHERE "tripId" = $5 AND "userId" = $6
-      RETURNING *;
+      update "Trips"
+      set "title" = $1, "description" = $2, "startDate" = $3, "endDate" = $4
+      where "tripId" = $5 and "userId" = $6
+      returning *;
     `;
     const params = [
       title,

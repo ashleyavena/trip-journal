@@ -49,8 +49,15 @@ export function EntryList() {
         <div className="column-full">
           <ul className="entry-ul">
             {entries.map((entry) => (
-              <EntryCard key={entry.tripId} entry={entry} />
+              <EntryCard
+                key={`${entry.tripId}-${entry.photoUrl}`}
+                entry={entry}
+              />
             ))}
+
+            {/* {entries.map((entry) => (
+              <EntryCard key={entry.tripId} entry={entry} />
+            ))} */}
           </ul>
         </div>
       </div>
