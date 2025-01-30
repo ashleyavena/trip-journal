@@ -8,6 +8,7 @@ import { TripEntryForm } from './pages/TripEntryForm';
 import './App.css';
 import { GetStarted } from './pages/GetStarted';
 import { NavBar } from './components/NavBar';
+import { UploadForm } from './components/UploadForm';
 
 export default function App() {
   return (
@@ -21,6 +22,16 @@ export default function App() {
         <Route path="/home" element={<Home />} />
         <Route path="/navBar" element={<NavBar />} />
         <Route path="/details/:tripId" element={<TripEntryForm />} />
+        <Route
+          path="/uploadImages/:tripId"
+          element={
+            <UploadForm
+              onUpload={function (): void {
+                throw new Error('Function not implemented.');
+              }}
+            />
+          }
+        />
         {/*
             <Route path="details/:entryId" element={<EntryList />} /> */}
 

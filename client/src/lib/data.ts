@@ -84,8 +84,8 @@ export async function addTrip(newEntry: Entry) {
     throw new Error('User is not authenticated');
   }
 
-  const { title, startDate, endDate } = newEntry;
-  if (!title || !startDate || !endDate) {
+  const { title, startDate, endDate, photoUrl } = newEntry;
+  if (!title || !startDate || !endDate || !photoUrl) {
     throw new Error('Title, start date, and end date are required fields.');
   }
   if (

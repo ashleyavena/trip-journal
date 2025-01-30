@@ -240,6 +240,7 @@ app.delete('/api/trips/:tripId', authMiddleware, async (req, res, next) => {
   }
 });
 
+// upload photos
 app.post(
   '/api/uploads',
   uploadsMiddleware.single('image'),
@@ -252,8 +253,8 @@ app.post(
       }
       const url = `/images/${req.file.filename}`;
       const sql = `
-      insert into "images" ("url", "caption")
-      values ($1,$2)
+      insert into "Photos" ("photoUrl")
+      values ($1)
       returning *;
       `;
       const result = await db.query<Photos>(sql, [url, caption]);
@@ -264,11 +265,12 @@ app.post(
   }
 );
 
+// get images
 app.get('/api/images', async (req, res, next) => {
   try {
     const sql = `
       select *
-        from "images"
+        from "Photos"
     `;
     const result = await db.query<Photos>(sql);
     res.json(result.rows);

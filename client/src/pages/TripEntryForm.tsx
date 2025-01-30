@@ -32,7 +32,7 @@ export function TripEntryForm() {
         const entry = await readTrip(id);
         if (!entry) throw new Error(`Entry with ID ${id} not found`);
         setEntry(entry);
-        setPhotoUrl(entry.photoUrl);
+        // setPhotoUrl(entry.photoUrl); //added
       } catch (err) {
         setError(err);
       } finally {
@@ -46,14 +46,17 @@ export function TripEntryForm() {
     event.preventDefault();
     try {
       const formData = new FormData(event.currentTarget);
-      const newEntry = Object.fromEntries(formData) as unknown as Entry;
-      newEntry.photoUrl = photoUrl;
+      // formData.append('imageUrl', photoUrl); //added
+
       const userId = readUser()?.userId;
       if (!userId) {
         alert('User is not authenticated. Please log in again.');
-        navigate('/login'); // Redirect to login page
+        navigate('/login');
         return;
       }
+      const newEntry = Object.fromEntries(formData) as unknown as Entry;
+      // newEntry.userId = userId; //added
+      newEntry.photoUrl = photoUrl; //added
 
       if (isEditing) {
         updateEntry({ ...entry, ...newEntry });
@@ -94,15 +97,16 @@ export function TripEntryForm() {
           <h1>{isEditing ? 'Edit Entry' : 'New Entry'}</h1>
         </div>
       </div>
+
       <form onSubmit={handleSubmit}>
         <div className="row margin-bottom-1">
-          <div className="column-half">
+          {/* <div className="column-half">
             <img
               className="input-b-radius form-image"
               src={photoUrl || '/images/placeholder-image-square.jpg'}
               alt="entry"
             />
-          </div>
+          </div> */}
           <div className="column-half">
             <label className="margin-bottom-1 d-block">
               Title
@@ -148,6 +152,7 @@ export function TripEntryForm() {
             </label>
           </div>
         </div>
+
         <div className="row margin-bottom-1">
           <div className="column-full">
             <label className="margin-bottom-1 d-block">
@@ -163,6 +168,9 @@ export function TripEntryForm() {
             </label>
           </div>
         </div>
+        {/* <UploadForm onUpload={setPhotoUrl} /> */}
+        {photoUrl && <img src={photoUrl} alt="Uploaded preview" />}
+
         <div className="row">
           <div className="column-full d-flex justify-between">
             {isEditing && (

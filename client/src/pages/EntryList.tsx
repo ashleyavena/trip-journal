@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
 import { FaPencilAlt } from 'react-icons/fa';
+import { Link } from 'react-router-dom';
 import { Entry, readTrips } from '../lib/data';
+import { IoMdPhotos } from 'react-icons/io';
 
 export function EntryList() {
   const [entries, setEntries] = useState<Entry[]>([]);
@@ -54,10 +55,6 @@ export function EntryList() {
                 entry={entry}
               />
             ))}
-
-            {/* {entries.map((entry) => (
-              <EntryCard key={entry.tripId} entry={entry} />
-            ))} */}
           </ul>
         </div>
       </div>
@@ -85,6 +82,9 @@ function EntryCard({ entry }: EntryProps) {
               <h3>{entry.title}</h3>
               <Link to={`/details/${entry.tripId}`}>
                 <FaPencilAlt />
+              </Link>
+              <Link to={`/uploadImages/:tripId${entry.tripId}`}>
+                <IoMdPhotos />
               </Link>
             </div>
           </div>
