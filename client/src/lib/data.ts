@@ -2,14 +2,21 @@
 
 import { User } from '../components/UserContext';
 
+export type Photo = {
+  photoId: number;
+  tripId: number;
+  photoUrl: string;
+  updatedAt: string;
+};
+
 export type Entry = {
   tripId?: number;
   userId?: number;
   title: string;
   description: string;
-  photoUrl: string;
   startDate: number;
   endDate: number;
+  photos: Photo[];
 };
 
 const authKey = 'um.auth';
@@ -84,8 +91,8 @@ export async function addTrip(newEntry: Entry) {
     throw new Error('User is not authenticated');
   }
 
-  const { title, startDate, endDate, photoUrl } = newEntry;
-  if (!title || !startDate || !endDate || !photoUrl) {
+  const { title, startDate, endDate } = newEntry;
+  if (!title || !startDate || !endDate) {
     throw new Error('Title, start date, and end date are required fields.');
   }
   if (

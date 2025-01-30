@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars -- Remove me */
 import { type FormEvent, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export type Image = {
   imageId: number;
@@ -8,20 +9,28 @@ export type Image = {
 };
 
 type UploadFormProps = {
+  tripId: string;
   onUpload: (url: string) => void;
 };
 
-export function UploadForm({ onUpload }: UploadFormProps) {
+export function UploadForm({ tripId, onUpload }: UploadFormProps) {
   const [imageFile, setImageFile] = useState('');
+  const navigate = useNavigate();
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
+    formData.append('tripId', tripId);
+
     try {
       const req = {
         method: 'POST',
         body: formData,
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('authToken') || ''}`, //added
+        },
       };
+
       const res = await fetch('/api/uploads', req);
       if (!res.ok) {
         throw new Error(`fetch error ${res.status}`);
@@ -30,6 +39,7 @@ export function UploadForm({ onUpload }: UploadFormProps) {
       console.log('image:', image);
       setImageFile(image.url); // added
       onUpload(image.url);
+      navigate('/trips');
     } catch (error) {
       console.log('error message:', error);
     }

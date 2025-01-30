@@ -157,15 +157,23 @@ app.post('/api/trips', authMiddleware, async (req, res, next) => {
   }
 });
 
-// api to get all trip entries backend
+// api to get multiple photos per trip
 app.get('/api/trips', authMiddleware, async (req, res, next) => {
   try {
     const sql = `
-      select t.*, p."photoUrl"
-        from "Trips" t
-        left join "Photos" p on t."tripId" = p."tripId"
-      where t."userId" = $1;
+      SELECT t.*,
+             COALESCE(json_agg(p.*) FILTER (WHERE p."photoId" IS NOT NULL), '[]') AS photos
+      FROM "Trips" t
+      LEFT JOIN "Photos" p ON t."tripId" = p."tripId"
+      WHERE t."userId" = $1
+      GROUP BY t."tripId";
     `;
+    // `
+    //   select t.*, p."photoUrl"
+    //     from "Trips" t
+    //     left join "Photos" p on t."tripId" = p."tripId"
+    //   where t."userId" = $1;
+    // `;
     const result = await db.query<Trips>(sql, [req.user?.userId]);
     res.json(result.rows);
   } catch (err) {
@@ -181,11 +189,19 @@ app.get('/api/trips/:tripId', authMiddleware, async (req, res, next) => {
       throw new ClientError(400, 'Invalid entry');
     }
     const sql = `
-      select t.*, p."photoUrl"
-      from "Trips" t
-      left join "Photos" p on t."tripId" = p."tripId"
-      where t."tripId" = $1 and t."userId" = $2;
+      SELECT t.*,
+             COALESCE(json_agg(p.*) FILTER (WHERE p."photoId" IS NOT NULL), '[]') AS photos
+      FROM "Trips" t
+      LEFT JOIN "Photos" p ON t."tripId" = p."tripId"
+      WHERE t."tripId" = $1 AND t."userId" = $2
+      GROUP BY t."tripId";
     `;
+    // const sql = `
+    //   select t.*, p."photoUrl"
+    //   from "Trips" t
+    //   left join "Photos" p on t."tripId" = p."tripId"
+    //   where t."tripId" = $1 and t."userId" = $2;
+    // `;
     const params = [tripId, req.user?.userId];
     const result = await db.query(sql, params);
     const trip = result.rows[0];
@@ -246,24 +262,68 @@ app.post(
   uploadsMiddleware.single('image'),
   async (req, res, next) => {
     try {
+      console.log('Upload request received:', req.body, req.file);
+
       if (!req.file) throw new ClientError(400, 'no file field in request');
-      const { caption } = req.body as Partial<Photos>;
-      if (!caption) {
-        throw new ClientError(400, 'caption is a required field');
+
+      const { tripId } = req.body as Partial<Photos>;
+
+      if (!tripId) {
+        throw new ClientError(400, 'tripId is a required field');
       }
+      const parsedTripId =
+        typeof tripId === 'string' ? parseInt(tripId, 10) : tripId; // added , should tripId be a number or string?
+      if (isNaN(parsedTripId)) {
+        throw new ClientError(400, 'Invalid tripId');
+      }
+
+      const tripCheckSql = `SELECT "tripId" FROM "Trips" WHERE "tripId" = $1;`;
+      const tripCheckResult = await db.query(tripCheckSql, [parsedTripId]);
+
+      if (tripCheckResult.rows.length === 0) {
+        throw new ClientError(
+          404,
+          `Trip with tripId ${parsedTripId} not found`
+        );
+      }
+
       const url = `/images/${req.file.filename}`;
       const sql = `
-      insert into "Photos" ("photoUrl")
-      values ($1)
+      insert into "Photos" ("tripId", "photoUrl")
+      values ($1, $2)
       returning *;
       `;
-      const result = await db.query<Photos>(sql, [url, caption]);
+      const params = [parsedTripId, url];
+      const result = await db.query<Photos>(sql, params);
       res.status(201).json(result.rows[0]);
     } catch (err) {
       next(err);
     }
   }
 );
+
+// endpoint to add photos to a trip entry
+app.post('/api/photos', authMiddleware, async (req, res, next) => {
+  try {
+    const { tripId, photoUrl } = req.body;
+
+    if (!tripId || !photoUrl) {
+      throw new ClientError(400, 'tripId and photoUrl are required');
+    }
+
+    const sql = `
+      INSERT INTO "Photos" ("tripId", "photoUrl")
+      VALUES ($1, $2)
+      RETURNING *;
+    `;
+    const params = [tripId, photoUrl];
+
+    const result = await db.query<Photos>(sql, params);
+    res.status(201).json(result.rows[0]);
+  } catch (err) {
+    next(err);
+  }
+});
 
 // get images
 app.get('/api/images', async (req, res, next) => {

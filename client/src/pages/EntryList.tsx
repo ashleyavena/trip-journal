@@ -50,10 +50,7 @@ export function EntryList() {
         <div className="column-full">
           <ul className="entry-ul">
             {entries.map((entry) => (
-              <EntryCard
-                key={`${entry.tripId}-${entry.photoUrl}`}
-                entry={entry}
-              />
+              <EntryCard key={entry.tripId} entry={entry} />
             ))}
           </ul>
         </div>
@@ -72,7 +69,8 @@ function EntryCard({ entry }: EntryProps) {
         <div className="column-half">
           <img
             className="input-b-radius form-image"
-            src={entry.photoUrl}
+            src={entry.photos[0]?.photoUrl}
+            // add default photo if 0 isnt there
             alt="entry"
           />
         </div>
@@ -83,7 +81,7 @@ function EntryCard({ entry }: EntryProps) {
               <Link to={`/details/${entry.tripId}`}>
                 <FaPencilAlt />
               </Link>
-              <Link to={`/uploadImages/:tripId${entry.tripId}`}>
+              <Link to={`/uploadImages/${entry.tripId}`}>
                 <IoMdPhotos />
               </Link>
             </div>

@@ -18,7 +18,7 @@ import {
 export function TripEntryForm() {
   const { tripId } = useParams();
   const [entry, setEntry] = useState<Entry>();
-  const [photoUrl, setPhotoUrl] = useState<string>('');
+  // const [photoUrl, setPhotoUrl] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<unknown>();
   const [isDeleting, setIsDeleting] = useState(false);
@@ -56,7 +56,6 @@ export function TripEntryForm() {
       }
       const newEntry = Object.fromEntries(formData) as unknown as Entry;
       // newEntry.userId = userId; //added
-      newEntry.photoUrl = photoUrl; //added
 
       if (isEditing) {
         updateEntry({ ...entry, ...newEntry });
@@ -138,18 +137,6 @@ export function TripEntryForm() {
                 className="input-b-color text-padding input-b-radius purple-outline input-height margin-bottom-2 d-block width-100"
               />
             </label>
-
-            <label className="margin-bottom-1 d-block">
-              Photo URL
-              <input
-                name="photoUrl"
-                defaultValue={entry?.photoUrl ?? ''}
-                required
-                className="input-b-color text-padding input-b-radius purple-outline input-height margin-bottom-2 d-block width-100"
-                type="text"
-                onChange={(e) => setPhotoUrl(e.target.value)}
-              />
-            </label>
           </div>
         </div>
 
@@ -168,8 +155,8 @@ export function TripEntryForm() {
             </label>
           </div>
         </div>
-        {/* <UploadForm onUpload={setPhotoUrl} /> */}
-        {photoUrl && <img src={photoUrl} alt="Uploaded preview" />}
+        {/* <UploadForm onUpload={setPhotoUrl} />
+        {photoUrl && <img src={photoUrl} alt="Uploaded preview" />} */}
 
         <div className="row">
           <div className="column-full d-flex justify-between">
