@@ -6,6 +6,7 @@ import jwt from 'jsonwebtoken';
 import { authMiddleware, ClientError, errorMiddleware } from './lib/index.js';
 import argon2 from 'argon2';
 import { nextTick } from 'process';
+import { uploadsMiddleware } from './lib/uploads-middleware.js';
 
 type User = {
   userId: number;
@@ -20,6 +21,13 @@ type Trips = {
   description: string;
   startDate: string;
   endDate: string;
+};
+
+type Photos = {
+  photoId: number;
+  photoUrl: string;
+  tripId: number;
+  caption: string;
 };
 
 const db = new pg.Pool({
@@ -229,6 +237,43 @@ app.delete('/api/trips/:tripId', authMiddleware, async (req, res, next) => {
     res.status(204).send();
   } catch (error) {
     next(error);
+  }
+});
+
+app.post(
+  '/api/uploads',
+  uploadsMiddleware.single('image'),
+  async (req, res, next) => {
+    try {
+      if (!req.file) throw new ClientError(400, 'no file field in request');
+      const { caption } = req.body as Partial<Photos>;
+      if (!caption) {
+        throw new ClientError(400, 'caption is a required field');
+      }
+      const url = `/images/${req.file.filename}`;
+      const sql = `
+      insert into "images" ("url", "caption")
+      values ($1,$2)
+      returning *;
+      `;
+      const result = await db.query<Photos>(sql, [url, caption]);
+      res.status(201).json(result.rows[0]);
+    } catch (err) {
+      next(err);
+    }
+  }
+);
+
+app.get('/api/images', async (req, res, next) => {
+  try {
+    const sql = `
+      select *
+        from "images"
+    `;
+    const result = await db.query<Photos>(sql);
+    res.json(result.rows);
+  } catch (err) {
+    next(err);
   }
 });
 
