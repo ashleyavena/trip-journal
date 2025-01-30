@@ -1,8 +1,8 @@
 import { Link, Outlet } from 'react-router-dom';
-import { useUser } from '../components/useUser';
+// import { useUser } from '../components/useUser';
 
 export function GetStarted() {
-  const { user } = useUser();
+  // const { user } = useUser();
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-6">
@@ -24,7 +24,7 @@ export function GetStarted() {
         </div>
       </div>
 
-      {!user && (
+      {/* {!user && (
         <div className="mt-6">
           <Link
             to="/app/home"
@@ -32,7 +32,7 @@ export function GetStarted() {
             Go to Home
           </Link>
         </div>
-      )}
+      )} */}
 
       <Outlet />
     </div>
