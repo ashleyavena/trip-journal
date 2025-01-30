@@ -1,12 +1,6 @@
 import { type FormEvent, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { User } from './UserContext';
 import { useUser } from './useUser';
-
-type AuthData = {
-  user: User;
-  token: string;
-};
 
 export function LoginForm() {
   const { handleSignIn } = useUser();
@@ -29,9 +23,9 @@ export function LoginForm() {
         const errorData = await response.json();
         throw new Error(errorData.error || `fetch error ${response.status}`);
       }
-      const { user, token } = (await response.json()) as AuthData;
+      const { user, token } = await response.json();
       handleSignIn(user, token);
-      navigate('/');
+      navigate('/home', { replace: true }); // Navigate to /home after successful login
     } catch (error) {
       alert(`Error signing in ${error}`);
     } finally {
@@ -46,7 +40,7 @@ export function LoginForm() {
         <div className="flex flex-wrap mb-1">
           <div className="w-1/2">
             <label className="mb-1 block">
-              Username loginform.tsx
+              Username
               <input
                 required
                 name="username"
