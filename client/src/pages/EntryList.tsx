@@ -87,5 +87,3 @@ function EntryCard({ entry }: EntryProps) {
     </li>
   );
 }
-
-// editing

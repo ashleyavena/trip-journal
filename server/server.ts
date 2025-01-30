@@ -93,7 +93,7 @@ app.post('/api/auth/sign-in', async (req, res, next) => {
 
     const payload = { userId, username };
     const token = jwt.sign(payload, hashKey, { expiresIn: '1h' }); // expiration for login
-    res.status(200).json({ user: { userId, username }, token }); // return generated token to client
+    res.status(200).json({ user: { userId, username }, token });
   } catch (error) {
     next(error);
   }
@@ -207,10 +207,6 @@ app.delete('/api/trips/:tripId', authMiddleware, async (req, res, next) => {
   } catch (error) {
     next(error);
   }
-});
-
-app.get('/api/hello', (req, res) => {
-  res.json({ message: 'Hello, World!' });
 });
 
 /*
