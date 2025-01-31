@@ -19,7 +19,8 @@ CREATE TABLE "Trips" (
   "title" text NOT NULL,
   "description" text,
   "startDate" date NOT NULL,
-  "endDate" date
+  "endDate" date,
+  "coverPhoto" text
 );
 
 --  not null means mandatory

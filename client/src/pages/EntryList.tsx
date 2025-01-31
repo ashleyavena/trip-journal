@@ -62,20 +62,23 @@ export function EntryList() {
 type EntryProps = {
   entry: Entry;
 };
+
 function EntryCard({ entry }: EntryProps) {
   return (
     <li>
       <div className="row">
         <div className="column-half">
-          <img
-            className="input-b-radius form-image"
-            src={
-              entry.photos[0]?.photoUrl ??
-              '/images/placeholder-image-square.jpg'
-            }
-            // add default photo if 0 isnt there
-            alt="entry"
-          />
+          <Link to={`/trip/${entry.tripId}`}>
+            <img
+              className="input-b-radius form-image"
+              src={
+                entry.coverPhoto ??
+                entry.photos[0]?.photoUrl ??
+                '/images/placeholder-image-square.jpg'
+              }
+              alt="entry"
+            />
+          </Link>
         </div>
         <div className="column-half">
           <div className="row">

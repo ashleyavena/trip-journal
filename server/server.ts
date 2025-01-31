@@ -293,7 +293,7 @@ app.post(
         );
       }
       const photoPromises = (req.files as Express.Multer.File[]).map(
-        async (file) => {
+        async (file, index) => {
           const url = `/images/${file.filename}`;
           const sql = `
           INSERT INTO "Photos" ("tripId", "photoUrl")
@@ -302,6 +302,14 @@ app.post(
         `;
           const params = [parsedTripId, url];
           const result = await db.query<Photos>(sql, params);
+          // if (index === 0) {
+          //   const updateCoverPhotoSql = `
+          //     UPDATE "Trips"
+          //     SET "coverPhoto" = $1
+          //     WHERE "tripId" = $2;
+          //   `;
+          //   await db.query(updateCoverPhotoSql, [url, parsedTripId]);
+          // }
           return result.rows[0];
         }
       );
@@ -351,6 +359,35 @@ app.get('/api/images', async (req, res, next) => {
     next(err);
   }
 });
+
+// Endpoint to update cover photo
+// app.put('/api/trips/:tripId/cover', authMiddleware, async (req, res, next) => {
+//   try {
+//     const { tripId } = req.params;
+//     const { coverPhoto } = req.body; // Get the cover photo URL from the request body
+
+//     if (!coverPhoto) {
+//       throw new ClientError(400, 'Cover photo URL is required');
+//     }
+
+//     const sql = `
+//       UPDATE "Trips"
+//       SET "coverPhoto" = $1
+//       WHERE "tripId" = $2 AND "userId" = $3
+//       RETURNING *;
+//     `;
+//     const params = [coverPhoto, tripId, req.user?.userId];
+//     const result = await db.query(sql, params);
+
+//     if (!result.rows.length) {
+//       throw new ClientError(404, 'Trip not found or unauthorized');
+//     }
+
+//     res.json(result.rows[0]); // Return the updated trip with the new cover photo
+//   } catch (err) {
+//     next(err);
+//   }
+// });
 
 /*
  * Handles paths that aren't handled by any other route handler.
