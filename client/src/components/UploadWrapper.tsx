@@ -8,10 +8,5 @@ export function UploadWrapper() {
     return <p>Error: Trip ID is missing</p>;
   }
 
-  return (
-    <UploadForm
-      tripId={tripId}
-      onUpload={(url) => console.log('Uploaded:', url)}
-    />
-  );
+  return <UploadForm tripId={tripId} />;
 }

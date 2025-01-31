@@ -3,21 +3,21 @@ import { useParams } from 'react-router-dom';
 import { Entry, readTrip } from '../lib/data';
 
 export function TripDetailsPage() {
-  const { tripId } = useParams<{ tripId: string }>(); // Extract tripId from the URL
+  const { tripId } = useParams<{ tripId: string }>();
   const [entry, setEntry] = useState<Entry | null>(null);
   const [error, setError] = useState<unknown>();
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     async function loadTripDetails() {
-      if (!tripId) return; // Guard clause in case tripId is missing
+      if (!tripId) return;
       setIsLoading(true);
       try {
-        const trip = await readTrip(Number(tripId)); // Fetch trip details by tripId
+        const trip = await readTrip(Number(tripId));
         if (trip) {
-          setEntry(trip); // Only set state if trip is valid
+          setEntry(trip);
         } else {
-          setEntry(null); // If no trip is found, set entry to null
+          setEntry(null);
         }
       } catch (err) {
         setError(err);
@@ -40,8 +40,6 @@ export function TripDetailsPage() {
 
   if (!entry) return <div>No trip found</div>;
 
-  // Since we are now using the first photo as the cover, we don't need separate cover photo logic.
-
   return (
     <div className="container">
       <h1>{entry.title}</h1>
@@ -58,8 +56,8 @@ export function TripDetailsPage() {
       <div className="photos">
         <h3>Photos:</h3>
         {entry.photos?.map((photo, index) => {
-          // Skip the first photo because it's already being shown as the cover
-          if (index === 0) return null;
+          // console.log('TripDetailsPage - Photos:', entry.photos);
+
           return (
             <div key={index}>
               <img
@@ -71,20 +69,6 @@ export function TripDetailsPage() {
           );
         })}
       </div>
-
-      {/* Displaying the first photo as the cover photo */}
-      {/* <div>
-        {entry.photos?.length > 0 && (
-          <div>
-            <h3>Cover Photo:</h3>
-            <img
-              src={entry.photos[0].photoUrl}
-              alt="Cover Photo"
-              style={{ width: '300px', height: 'auto' }}
-            />
-          </div>
-        )}
-      </div> */}
     </div>
   );
 }

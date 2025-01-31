@@ -269,6 +269,9 @@ app.post(
   uploadsMiddleware.array('photos', 10),
   async (req, res, next) => {
     try {
+      console.log('Incoming Upload Request:', req.body);
+      console.log('Uploaded Files:', req.files);
+
       if (!req.files || req.files.length === 0) {
         throw new ClientError(400, 'No file field in request');
       }
@@ -302,21 +305,12 @@ app.post(
         `;
           const params = [parsedTripId, url];
           const result = await db.query<Photos>(sql, params);
-          // if (index === 0) {
-          //   const updateCoverPhotoSql = `
-          //     UPDATE "Trips"
-          //     SET "coverPhoto" = $1
-          //     WHERE "tripId" = $2;
-          //   `;
-          //   await db.query(updateCoverPhotoSql, [url, parsedTripId]);
-          // }
           return result.rows[0];
         }
       );
 
-      const uploadedPhotos = await Promise.all(photoPromises); // Wait for all insertions
-
-      res.status(201).json(uploadedPhotos); // Return the uploaded photos' info
+      const uploadedPhotos = await Promise.all(photoPromises);
+      res.status(201).json(uploadedPhotos);
     } catch (err) {
       next(err);
     }

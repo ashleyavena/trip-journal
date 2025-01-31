@@ -13,8 +13,7 @@ export function EntryList() {
     async function load() {
       setIsLoading(true);
       try {
-        const entries = await readTrips();
-        setEntries(entries);
+        setEntries(await readTrips());
       } catch (err) {
         setError(err);
       } finally {
@@ -25,14 +24,13 @@ export function EntryList() {
   }, []);
 
   if (isLoading) return <div>Loading...</div>;
-  if (error) {
+  if (error)
     return (
       <div>
         Error Loading Entries:{' '}
         {error instanceof Error ? error.message : 'Unknown Error'}
       </div>
     );
-  }
 
   return (
     <div className="container">
@@ -59,11 +57,7 @@ export function EntryList() {
   );
 }
 
-type EntryProps = {
-  entry: Entry;
-};
-
-function EntryCard({ entry }: EntryProps) {
+function EntryCard({ entry }: { entry: Entry }) {
   return (
     <li>
       <div className="row">
@@ -71,9 +65,9 @@ function EntryCard({ entry }: EntryProps) {
           <Link to={`/trip/${entry.tripId}`}>
             <img
               className="input-b-radius form-image"
+              style={{ width: 200, height: 200, objectFit: 'contain' }}
               src={
-                entry.coverPhoto ??
-                entry.photos[0]?.photoUrl ??
+                entry.photos?.[0]?.photoUrl ||
                 '/images/placeholder-image-square.jpg'
               }
               alt="entry"
