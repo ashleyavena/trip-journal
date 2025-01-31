@@ -3,6 +3,7 @@ import { FaPencilAlt } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import { Entry, readTrips } from '../lib/data';
 import { IoMdPhotos } from 'react-icons/io';
+import '../styles.css';
 
 export function EntryList() {
   const [entries, setEntries] = useState<Entry[]>([]);
@@ -56,16 +57,14 @@ export function EntryList() {
     </div>
   );
 }
-
 function EntryCard({ entry }: { entry: Entry }) {
   return (
-    <li>
+    <li className="entry-card">
       <div className="row">
         <div className="column-half">
-          <Link to={`/trip/${entry.tripId}`}>
+          <Link to={`/trip/${entry.tripId}`} className="block">
             <img
               className="input-b-radius form-image"
-              style={{ width: 200, height: 200, objectFit: 'contain' }}
               src={
                 entry.photos?.[0]?.photoUrl ||
                 '/images/placeholder-image-square.jpg'
