@@ -18,7 +18,7 @@ import {
 export function TripEntryForm() {
   const { tripId } = useParams();
   const [entry, setEntry] = useState<Entry>();
-  const [photoUrl, setPhotoUrl] = useState<string>('');
+  // const [photoUrl, setPhotoUrl] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<unknown>();
   const [isDeleting, setIsDeleting] = useState(false);
@@ -32,7 +32,7 @@ export function TripEntryForm() {
         const entry = await readTrip(id);
         if (!entry) throw new Error(`Entry with ID ${id} not found`);
         setEntry(entry);
-        setPhotoUrl(entry.photoUrl);
+        // setPhotoUrl(entry.photoUrl); //added
       } catch (err) {
         setError(err);
       } finally {
@@ -46,14 +46,14 @@ export function TripEntryForm() {
     event.preventDefault();
     try {
       const formData = new FormData(event.currentTarget);
-      const newEntry = Object.fromEntries(formData) as unknown as Entry;
-      newEntry.photoUrl = photoUrl;
+
       const userId = readUser()?.userId;
       if (!userId) {
         alert('User is not authenticated. Please log in again.');
-        navigate('/login'); // Redirect to login page
+        navigate('/login');
         return;
       }
+      const newEntry = Object.fromEntries(formData) as unknown as Entry;
 
       if (isEditing) {
         updateEntry({ ...entry, ...newEntry });
@@ -94,15 +94,16 @@ export function TripEntryForm() {
           <h1>{isEditing ? 'Edit Entry' : 'New Entry'}</h1>
         </div>
       </div>
+
       <form onSubmit={handleSubmit}>
         <div className="row margin-bottom-1">
-          <div className="column-half">
+          {/* <div className="column-half">
             <img
               className="input-b-radius form-image"
               src={photoUrl || '/images/placeholder-image-square.jpg'}
               alt="entry"
             />
-          </div>
+          </div> */}
           <div className="column-half">
             <label className="margin-bottom-1 d-block">
               Title
@@ -134,20 +135,9 @@ export function TripEntryForm() {
                 className="input-b-color text-padding input-b-radius purple-outline input-height margin-bottom-2 d-block width-100"
               />
             </label>
-
-            <label className="margin-bottom-1 d-block">
-              Photo URL
-              <input
-                name="photoUrl"
-                defaultValue={entry?.photoUrl ?? ''}
-                required
-                className="input-b-color text-padding input-b-radius purple-outline input-height margin-bottom-2 d-block width-100"
-                type="text"
-                onChange={(e) => setPhotoUrl(e.target.value)}
-              />
-            </label>
           </div>
         </div>
+
         <div className="row margin-bottom-1">
           <div className="column-full">
             <label className="margin-bottom-1 d-block">
@@ -163,6 +153,9 @@ export function TripEntryForm() {
             </label>
           </div>
         </div>
+        {/* <UploadForm onUpload={setPhotoUrl} />
+        {photoUrl && <img src={photoUrl} alt="Uploaded preview" />} */}
+
         <div className="row">
           <div className="column-full d-flex justify-between">
             {isEditing && (

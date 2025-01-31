@@ -6,6 +6,7 @@ import jwt from 'jsonwebtoken';
 import { authMiddleware, ClientError, errorMiddleware } from './lib/index.js';
 import argon2 from 'argon2';
 import { nextTick } from 'process';
+import { uploadsMiddleware } from './lib/uploads-middleware.js';
 
 type User = {
   userId: number;
@@ -20,6 +21,13 @@ type Trips = {
   description: string;
   startDate: string;
   endDate: string;
+};
+
+type Photos = {
+  photoId: number;
+  photoUrl: string;
+  tripId: number;
+  caption: string;
 };
 
 const db = new pg.Pool({
@@ -108,9 +116,8 @@ app.post('/api/auth/sign-out', (req, res, next) => {
 // api to create trip entry backend
 app.post('/api/trips', authMiddleware, async (req, res, next) => {
   try {
-    const { userId, title, photoUrl, description, startDate, endDate } =
-      req.body;
-    if (!userId || !title || !photoUrl) {
+    const { userId, title, description, startDate, endDate } = req.body;
+    if (!userId || !title) {
       throw new ClientError(400, 'title and start date are required fields');
     }
     if (
@@ -138,7 +145,7 @@ app.post('/api/trips', authMiddleware, async (req, res, next) => {
     returning *;
     `;
 
-    const photoParams = [tripId, photoUrl];
+    const photoParams = [tripId];
     const photoResult = await db.query(photoSql, photoParams);
 
     res
@@ -149,15 +156,23 @@ app.post('/api/trips', authMiddleware, async (req, res, next) => {
   }
 });
 
-// api to get all trip entries backend
+// api to get multiple photos per trip
 app.get('/api/trips', authMiddleware, async (req, res, next) => {
   try {
     const sql = `
-      select t.*, p."photoUrl"
-        from "Trips" t
-        left join "Photos" p on t."tripId" = p."tripId"
-      where t."userId" = $1;
+      SELECT t.*,
+             COALESCE(json_agg(p.*) FILTER (WHERE p."photoId" IS NOT NULL), '[]') AS photos
+      FROM "Trips" t
+      LEFT JOIN "Photos" p ON t."tripId" = p."tripId"
+      WHERE t."userId" = $1
+      GROUP BY t."tripId";
     `;
+    // `
+    //   select t.*, p."photoUrl"
+    //     from "Trips" t
+    //     left join "Photos" p on t."tripId" = p."tripId"
+    //   where t."userId" = $1;
+    // `;
     const result = await db.query<Trips>(sql, [req.user?.userId]);
     res.json(result.rows);
   } catch (err) {
@@ -173,11 +188,19 @@ app.get('/api/trips/:tripId', authMiddleware, async (req, res, next) => {
       throw new ClientError(400, 'Invalid entry');
     }
     const sql = `
-      select t.*, p."photoUrl"
-      from "Trips" t
-      left join "Photos" p on t."tripId" = p."tripId"
-      where t."tripId" = $1 and t."userId" = $2;
+      SELECT t.*,
+             COALESCE(json_agg(p.*) FILTER (WHERE p."photoId" IS NOT NULL), '[]') AS photos
+      FROM "Trips" t
+      LEFT JOIN "Photos" p ON t."tripId" = p."tripId"
+      WHERE t."tripId" = $1 AND t."userId" = $2
+      GROUP BY t."tripId";
     `;
+    // const sql = `
+    //   select t.*, p."photoUrl"
+    //   from "Trips" t
+    //   left join "Photos" p on t."tripId" = p."tripId"
+    //   where t."tripId" = $1 and t."userId" = $2;
+    // `;
     const params = [tripId, req.user?.userId];
     const result = await db.query(sql, params);
     const trip = result.rows[0];
@@ -218,12 +241,20 @@ app.put('/api/trips/:tripId', authMiddleware, async (req, res, next) => {
 app.delete('/api/trips/:tripId', authMiddleware, async (req, res, next) => {
   try {
     const { tripId } = req.params;
-    const sql = `
+
+    const deletePhotosSql = `
+      DELETE FROM "Photos"
+      WHERE "tripId" = $1;
+    `;
+    await db.query(deletePhotosSql, [tripId]);
+
+    const deleteTripSql = `
       DELETE FROM "Trips"
       WHERE "tripId" = $1 AND "userId" = $2
       RETURNING *;
     `;
-    const result = await db.query(sql, [tripId, req.user?.userId]);
+
+    const result = await db.query(deleteTripSql, [tripId, req.user?.userId]);
     if (!result.rows.length)
       throw new ClientError(404, 'Trip not found or unauthorized');
     res.status(204).send();
@@ -231,6 +262,126 @@ app.delete('/api/trips/:tripId', authMiddleware, async (req, res, next) => {
     next(error);
   }
 });
+
+// upload photos
+app.post(
+  '/api/uploads',
+  uploadsMiddleware.array('photos', 10),
+  async (req, res, next) => {
+    try {
+      console.log('Incoming Upload Request:', req.body);
+      console.log('Uploaded Files:', req.files);
+
+      if (!req.files || req.files.length === 0) {
+        throw new ClientError(400, 'No file field in request');
+      }
+
+      const { tripId } = req.body as Partial<Photos>;
+      if (!tripId) {
+        throw new ClientError(400, 'tripId is a required field');
+      }
+      const parsedTripId =
+        typeof tripId === 'string' ? parseInt(tripId, 10) : tripId;
+      if (isNaN(parsedTripId)) {
+        throw new ClientError(400, 'Invalid tripId');
+      }
+
+      const tripCheckSql = `SELECT "tripId" FROM "Trips" WHERE "tripId" = $1;`;
+      const tripCheckResult = await db.query(tripCheckSql, [parsedTripId]);
+
+      if (tripCheckResult.rows.length === 0) {
+        throw new ClientError(
+          404,
+          `Trip with tripId ${parsedTripId} not found`
+        );
+      }
+      const photoPromises = (req.files as Express.Multer.File[]).map(
+        async (file, index) => {
+          const url = `/images/${file.filename}`;
+          const sql = `
+          INSERT INTO "Photos" ("tripId", "photoUrl")
+          VALUES ($1, $2)
+          RETURNING *;
+        `;
+          const params = [parsedTripId, url];
+          const result = await db.query<Photos>(sql, params);
+          return result.rows[0];
+        }
+      );
+
+      const uploadedPhotos = await Promise.all(photoPromises);
+      res.status(201).json(uploadedPhotos);
+    } catch (err) {
+      next(err);
+    }
+  }
+);
+
+// endpoint to add photos to a trip entry
+app.post('/api/photos', authMiddleware, async (req, res, next) => {
+  try {
+    const { tripId, photoUrl } = req.body;
+
+    if (!tripId || !photoUrl) {
+      throw new ClientError(400, 'tripId and photoUrl are required');
+    }
+
+    const sql = `
+      INSERT INTO "Photos" ("tripId", "photoUrl")
+      VALUES ($1, $2)
+      RETURNING *;
+    `;
+    const params = [tripId, photoUrl];
+
+    const result = await db.query<Photos>(sql, params);
+    res.status(201).json(result.rows[0]);
+  } catch (err) {
+    next(err);
+  }
+});
+
+// get images
+app.get('/api/images', async (req, res, next) => {
+  try {
+    const sql = `
+      select *
+        from "Photos"
+    `;
+    const result = await db.query<Photos>(sql);
+    res.json(result.rows);
+  } catch (err) {
+    next(err);
+  }
+});
+
+// Endpoint to update cover photo
+// app.put('/api/trips/:tripId/cover', authMiddleware, async (req, res, next) => {
+//   try {
+//     const { tripId } = req.params;
+//     const { coverPhoto } = req.body; // Get the cover photo URL from the request body
+
+//     if (!coverPhoto) {
+//       throw new ClientError(400, 'Cover photo URL is required');
+//     }
+
+//     const sql = `
+//       UPDATE "Trips"
+//       SET "coverPhoto" = $1
+//       WHERE "tripId" = $2 AND "userId" = $3
+//       RETURNING *;
+//     `;
+//     const params = [coverPhoto, tripId, req.user?.userId];
+//     const result = await db.query(sql, params);
+
+//     if (!result.rows.length) {
+//       throw new ClientError(404, 'Trip not found or unauthorized');
+//     }
+
+//     res.json(result.rows[0]); // Return the updated trip with the new cover photo
+//   } catch (err) {
+//     next(err);
+//   }
+// });
 
 /*
  * Handles paths that aren't handled by any other route handler.

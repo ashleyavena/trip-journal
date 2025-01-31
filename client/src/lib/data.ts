@@ -2,14 +2,22 @@
 
 import { User } from '../components/UserContext';
 
+export type Photo = {
+  photoId: number;
+  tripId: number;
+  photoUrl: string;
+  updatedAt: string;
+};
+
 export type Entry = {
   tripId?: number;
   userId?: number;
   title: string;
   description: string;
-  photoUrl: string;
   startDate: number;
   endDate: number;
+  photos: Photo[];
+  coverPhoto?: string;
 };
 
 const authKey = 'um.auth';
@@ -147,3 +155,21 @@ export async function removeEntry(entryId: number) {
     throw new Error(`Failed to delete entry ${response.status}`);
   return (await response.json()) as Entry;
 }
+
+// export async function updateCoverPhoto(tripId: number, photoUrl: string) {
+//   const response = await fetch(`/api/trips/${tripId}/cover`, {
+//     method: 'PUT',
+//     headers: {
+//       'Content-Type': 'application/json',
+//       Authorization: `Bearer ${readToken()}`,
+//     },
+//     body: JSON.stringify({ coverPhoto: photoUrl }),
+//   });
+
+//   if (!response.ok) {
+//     throw new Error(`Failed to update cover photo: ${response.status}`);
+//   }
+
+//   const updatedEntry = (await response.json()) as Entry;
+//   return updatedEntry; // Return the updated entry with the new cover photo
+// }
