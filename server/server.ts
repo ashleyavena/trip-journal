@@ -116,9 +116,8 @@ app.post('/api/auth/sign-out', (req, res, next) => {
 // api to create trip entry backend
 app.post('/api/trips', authMiddleware, async (req, res, next) => {
   try {
-    const { userId, title, photoUrl, description, startDate, endDate } =
-      req.body;
-    if (!userId || !title || !photoUrl) {
+    const { userId, title, description, startDate, endDate } = req.body;
+    if (!userId || !title) {
       throw new ClientError(400, 'title and start date are required fields');
     }
     if (
@@ -146,7 +145,7 @@ app.post('/api/trips', authMiddleware, async (req, res, next) => {
     returning *;
     `;
 
-    const photoParams = [tripId, photoUrl];
+    const photoParams = [tripId];
     const photoResult = await db.query(photoSql, photoParams);
 
     res
@@ -242,12 +241,20 @@ app.put('/api/trips/:tripId', authMiddleware, async (req, res, next) => {
 app.delete('/api/trips/:tripId', authMiddleware, async (req, res, next) => {
   try {
     const { tripId } = req.params;
-    const sql = `
+
+    const deletePhotosSql = `
+      DELETE FROM "Photos"
+      WHERE "tripId" = $1;
+    `;
+    await db.query(deletePhotosSql, [tripId]);
+
+    const deleteTripSql = `
       DELETE FROM "Trips"
       WHERE "tripId" = $1 AND "userId" = $2
       RETURNING *;
     `;
-    const result = await db.query(sql, [tripId, req.user?.userId]);
+
+    const result = await db.query(deleteTripSql, [tripId, req.user?.userId]);
     if (!result.rows.length)
       throw new ClientError(404, 'Trip not found or unauthorized');
     res.status(204).send();
@@ -259,20 +266,19 @@ app.delete('/api/trips/:tripId', authMiddleware, async (req, res, next) => {
 // upload photos
 app.post(
   '/api/uploads',
-  uploadsMiddleware.single('image'),
+  uploadsMiddleware.array('photos', 10),
   async (req, res, next) => {
     try {
-      console.log('Upload request received:', req.body, req.file);
-
-      if (!req.file) throw new ClientError(400, 'no file field in request');
+      if (!req.files || req.files.length === 0) {
+        throw new ClientError(400, 'No file field in request');
+      }
 
       const { tripId } = req.body as Partial<Photos>;
-
       if (!tripId) {
         throw new ClientError(400, 'tripId is a required field');
       }
       const parsedTripId =
-        typeof tripId === 'string' ? parseInt(tripId, 10) : tripId; // added , should tripId be a number or string?
+        typeof tripId === 'string' ? parseInt(tripId, 10) : tripId;
       if (isNaN(parsedTripId)) {
         throw new ClientError(400, 'Invalid tripId');
       }
@@ -286,16 +292,23 @@ app.post(
           `Trip with tripId ${parsedTripId} not found`
         );
       }
+      const photoPromises = (req.files as Express.Multer.File[]).map(
+        async (file) => {
+          const url = `/images/${file.filename}`;
+          const sql = `
+          INSERT INTO "Photos" ("tripId", "photoUrl")
+          VALUES ($1, $2)
+          RETURNING *;
+        `;
+          const params = [parsedTripId, url];
+          const result = await db.query<Photos>(sql, params);
+          return result.rows[0];
+        }
+      );
 
-      const url = `/images/${req.file.filename}`;
-      const sql = `
-      insert into "Photos" ("tripId", "photoUrl")
-      values ($1, $2)
-      returning *;
-      `;
-      const params = [parsedTripId, url];
-      const result = await db.query<Photos>(sql, params);
-      res.status(201).json(result.rows[0]);
+      const uploadedPhotos = await Promise.all(photoPromises); // Wait for all insertions
+
+      res.status(201).json(uploadedPhotos); // Return the uploaded photos' info
     } catch (err) {
       next(err);
     }

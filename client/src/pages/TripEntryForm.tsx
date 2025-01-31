@@ -46,7 +46,6 @@ export function TripEntryForm() {
     event.preventDefault();
     try {
       const formData = new FormData(event.currentTarget);
-      // formData.append('imageUrl', photoUrl); //added
 
       const userId = readUser()?.userId;
       if (!userId) {
@@ -55,7 +54,6 @@ export function TripEntryForm() {
         return;
       }
       const newEntry = Object.fromEntries(formData) as unknown as Entry;
-      // newEntry.userId = userId; //added
 
       if (isEditing) {
         updateEntry({ ...entry, ...newEntry });

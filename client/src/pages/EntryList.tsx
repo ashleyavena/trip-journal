@@ -69,7 +69,10 @@ function EntryCard({ entry }: EntryProps) {
         <div className="column-half">
           <img
             className="input-b-radius form-image"
-            src={entry.photos[0]?.photoUrl}
+            src={
+              entry.photos[0]?.photoUrl ??
+              '/images/placeholder-image-square.jpg'
+            }
             // add default photo if 0 isnt there
             alt="entry"
           />
