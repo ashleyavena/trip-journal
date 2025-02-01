@@ -1,8 +1,6 @@
 import { useEffect, useState } from 'react';
-import { FaPencilAlt } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import { Entry, readTrips } from '../lib/data';
-import { IoMdPhotos } from 'react-icons/io';
 import '../styles.css';
 
 export function EntryList() {
@@ -72,8 +70,9 @@ function EntryCard({ entry }: { entry: Entry }) {
               alt="entry"
             />
           </Link>
+          <h3>{entry.title}</h3>
         </div>
-        <div className="column-half">
+        {/* <div className="column-half">
           <div className="row">
             <div className="column-full d-flex justify-between">
               <h3>{entry.title}</h3>
@@ -86,7 +85,7 @@ function EntryCard({ entry }: { entry: Entry }) {
             </div>
           </div>
           <p>{entry.description}</p>
-        </div>
+        </div> */}
       </div>
     </li>
   );

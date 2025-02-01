@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { Entry, readTrip } from '../lib/data';
 import { Carousel } from '../components/Carousel';
+import { FaPencilAlt } from 'react-icons/fa';
+import { IoMdPhotos } from 'react-icons/io';
 
 export function TripDetailsPage() {
   const { tripId } = useParams<{ tripId: string }>();
@@ -43,6 +45,20 @@ export function TripDetailsPage() {
   return (
     <div className="container">
       <h1>{entry.title}</h1>
+      <div className="column-half">
+        <div className="row">
+          <div className="column-full d-flex justify-between">
+            <h3>{entry.title}</h3>
+            <Link to={`/details/${entry.tripId}`}>
+              <FaPencilAlt />
+            </Link>
+            <Link to={`/uploadImages/${entry.tripId}`}>
+              <IoMdPhotos />
+            </Link>
+          </div>
+        </div>
+        <p>{entry.description}</p>
+      </div>
       <p>
         <strong>Description:</strong> {entry.description}
       </p>
