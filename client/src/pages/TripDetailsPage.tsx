@@ -1,6 +1,9 @@
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { Entry, readTrip } from '../lib/data';
+import { Carousel } from '../components/Carousel';
+import { FaPencilAlt } from 'react-icons/fa';
+import { IoMdPhotos } from 'react-icons/io';
 
 export function TripDetailsPage() {
   const { tripId } = useParams<{ tripId: string }>();
@@ -39,10 +42,23 @@ export function TripDetailsPage() {
   }
 
   if (!entry) return <div>No trip found</div>;
-
   return (
     <div className="container">
       <h1>{entry.title}</h1>
+      <div className="column-half">
+        <div className="row">
+          <div className="column-full d-flex justify-between">
+            <h3>{entry.title}</h3>
+            <Link to={`/details/${entry.tripId}`}>
+              <FaPencilAlt />
+            </Link>
+            <Link to={`/uploadImages/${entry.tripId}`}>
+              <IoMdPhotos />
+            </Link>
+          </div>
+        </div>
+        <p>{entry.description}</p>
+      </div>
       <p>
         <strong>Description:</strong> {entry.description}
       </p>
@@ -53,22 +69,46 @@ export function TripDetailsPage() {
         <strong>End Date:</strong> {entry.endDate}
       </p>
 
-      <div className="photos">
-        <h3>Photos:</h3>
-        {entry.photos?.map((photo, index) => {
-          // console.log('TripDetailsPage - Photos:', entry.photos);
+      {/* Render the Carousel Component */}
+      {entry.photos && entry.photos.length > 0 && (
+        <Carousel photos={entry.photos.map((photo) => photo.photoUrl)} />
+      )}
 
-          return (
-            <div key={index}>
-              <img
-                src={photo.photoUrl}
-                alt={`Photo ${index + 1}`}
-                style={{ width: '200px', height: 'auto', margin: '10px' }}
-              />
-            </div>
-          );
-        })}
-      </div>
+      {/* Fallback if there are no photos */}
+      {!entry.photos ||
+        (entry.photos.length === 0 && <p>No photos available</p>)}
     </div>
   );
 }
+//   return (
+//     <div className="container">
+//       <h1>{entry.title}</h1>
+//       <p>
+//         <strong>Description:</strong> {entry.description}
+//       </p>
+//       <p>
+//         <strong>Start Date:</strong> {entry.startDate}
+//       </p>
+//       <p>
+//         <strong>End Date:</strong> {entry.endDate}
+//       </p>
+
+//       <div className="photos">
+//         <h3>Photos:</h3>
+//         {entry.photos?.map((photo, index) => {
+//           // console.log('TripDetailsPage - Photos:', entry.photos);
+
+//           return (
+//             <div key={index}>
+//               <img
+//                 src={photo.photoUrl}
+//                 alt={`Photo ${index + 1}`}
+//                 style={{ width: '200px', height: 'auto', margin: '10px' }}
+//               />
+//             </div>
+//           );
+//         })}
+//       </div>
+//     </div>
+//   );
+// }
