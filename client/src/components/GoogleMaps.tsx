@@ -1,5 +1,8 @@
 import { useLoadScript } from '@react-google-maps/api';
 
+const googleAPIKey = 'AIzaSyAfLTysbv8DhH39VJsyKyeT-3mdLVsgwFY';
+console.log(googleAPIKey);
+
 const libraries: 'places'[] = ['places']; // Load the Places API for Autocomplete
 
 export function GoogleMaps({ children }: { children: React.ReactNode }) {
