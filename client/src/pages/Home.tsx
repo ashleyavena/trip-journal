@@ -21,6 +21,9 @@ export function Home() {
       </header>
 
       <nav>
+        <Link to="/map" className="nav-link">
+          <h3>Map hm</h3>
+        </Link>
         <Link to="/" className="nav-link">
           <h3>Home hm</h3>
         </Link>
