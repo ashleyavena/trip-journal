@@ -11,8 +11,18 @@ import { UploadWrapper } from './components/UploadWrapper';
 import { TripDetailsPage } from './pages/TripDetailsPage';
 import { TripEntryForm } from './pages/TripEntryForm';
 import { MapPage } from './pages/MapPage'; // MapPage should handle the map rendering
+import { useState } from 'react';
 
 export default function App() {
+  const [pins, setPins] = useState<
+    { lat: number; lng: number; name: string }[]
+  >([]);
+
+  // Function to update the pins state
+  const addNewPin = (location: string, lat: number, lng: number) => {
+    setPins((prevPins) => [...prevPins, { lat, lng, name: location }]);
+  };
+
   return (
     <GoogleMaps>
       {/* This loads the Google Maps API and renders children (the map in MapPage) */}
@@ -23,9 +33,17 @@ export default function App() {
             <Route path="/sign-in" element={<AuthPage mode="sign-in" />} />
           </Route>
           <Route path="/home" element={<Home />} /> {/* Home page */}
-          <Route path="/map" element={<MapPage />} /> {/* New MapPage route */}
+          <Route path="/map" element={<MapPage pins={pins} />} />{' '}
+          {/* Pass pins state */}
+          <Route
+            path="/entry-form"
+            element={<TripEntryForm onAddLocation={addNewPin} />} // Pass function to TripEntryForm
+          />
           <Route path="/navBar" element={<NavBar />} />
-          <Route path="/details/:tripId" element={<TripEntryForm />} />
+          <Route
+            path="/details/:tripId"
+            element={<TripEntryForm onAddLocation={addNewPin} />}
+          />
           <Route path="/uploadImages/:tripId" element={<UploadWrapper />} />
           <Route path="/trip/:tripId" element={<TripDetailsPage />} />
           <Route path="/trips" element={<EntryList />} />

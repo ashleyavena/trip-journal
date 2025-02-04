@@ -18,6 +18,9 @@ export type Entry = {
   endDate: number;
   photos: Photo[];
   coverPhoto?: string;
+  location?: string;
+  lat?: number;
+  lng?: number;
 };
 
 const authKey = 'um.auth';

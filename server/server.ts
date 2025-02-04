@@ -116,9 +116,24 @@ app.post('/api/auth/sign-out', (req, res, next) => {
 // api to create trip entry backend
 app.post('/api/trips', authMiddleware, async (req, res, next) => {
   try {
-    const { userId, title, description, startDate, endDate } = req.body;
-    if (!userId || !title) {
-      throw new ClientError(400, 'title and start date are required fields');
+    const {
+      userId,
+      title,
+      description,
+      startDate,
+      endDate,
+      location,
+      lat,
+      lng,
+    } = req.body;
+    if (
+      !userId ||
+      !title ||
+      !location ||
+      !lat === undefined ||
+      !lng === undefined
+    ) {
+      throw new ClientError(400, 'required fields are missing');
     }
     if (
       !startDate ||
@@ -148,9 +163,19 @@ app.post('/api/trips', authMiddleware, async (req, res, next) => {
     const photoParams = [tripId];
     const photoResult = await db.query(photoSql, photoParams);
 
-    res
-      .status(201)
-      .json({ trip: tripResult.rows[0], photo: photoResult.rows[0].photoUrl });
+    const locationSql = `
+      INSERT INTO "Locations" ("tripId", "name", "latitude", "longitude")
+      VALUES ($1, $2, $3, $4)
+      RETURNING *;
+    `;
+    const locationParams = [tripId, location, lat.toString(), lng.toString()];
+    const locationResult = await db.query(locationSql, locationParams);
+
+    res.status(201).json({
+      trip: tripResult.rows[0],
+      photo: photoResult.rows[0].photoUrl,
+      location: locationResult.rows[0],
+    });
   } catch (error) {
     next(error);
   }

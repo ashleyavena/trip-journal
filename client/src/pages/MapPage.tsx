@@ -1,39 +1,33 @@
 import {
-  Map,
   AdvancedMarker,
+  APIProvider,
+  Map,
   MapCameraChangedEvent,
   Pin,
-  APIProvider,
 } from '@vis.gl/react-google-maps';
-import { GoogleMaps } from '../components/GoogleMaps';
-import '../App.css';
 import { useEffect, useState } from 'react';
+import '../App.css';
+import { GoogleMaps } from '../components/GoogleMaps';
 
-export function MapPage() {
-  const [isLoaded, setIsLoaded] = useState(false); // State to track if map API is loaded
+interface PinData {
+  lat: number;
+  lng: number;
+  name: string;
+}
+
+export function MapPage({ pins }: { pins: PinData[] }) {
+  const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
-    // Assuming `GoogleMaps` component handles API load status internally.
-    // You can adjust based on the logic you use.
-    setIsLoaded(true); // Set to true when Google Maps API is successfully loaded
+    setIsLoaded(true);
   }, []);
 
   const mapID = '67ffa5c4542cb48d'; // Map ID for styling (optional)
 
-  type Poi = {
-    key: string;
-    location: google.maps.LatLngLiteral;
-  };
-
-  const locations: Poi[] = [
-    { key: 'operaHouse', location: { lat: -33.8567844, lng: 151.213108 } },
-    { key: 'harbourBridge', location: { lat: -33.852228, lng: 151.2038374 } },
-  ];
-
-  const PoiMarkers = ({ pois }: { pois: Poi[] }) => (
+  const PoiMarkers = ({ pois }: { pois: PinData[] }) => (
     <>
-      {pois.map((poi) => (
-        <AdvancedMarker key={poi.key} position={poi.location}>
+      {pois.map((poi, index) => (
+        <AdvancedMarker key={index} position={{ lat: poi.lat, lng: poi.lng }}>
           <Pin
             background={'#FBBC04'}
             glyphColor={'#000'}
@@ -43,9 +37,11 @@ export function MapPage() {
       ))}
     </>
   );
+
   if (!isLoaded) {
     return <div>Loading Map...</div>;
   }
+
   return (
     <div id="map-container">
       <h3>GOOGLE MAP PAGE</h3>
@@ -66,7 +62,7 @@ export function MapPage() {
               )
             }>
             {/* Render markers using PoiMarkers */}
-            <PoiMarkers pois={locations} />
+            <PoiMarkers pois={pins} />
           </Map>
         </APIProvider>
       </GoogleMaps>

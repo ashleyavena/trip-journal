@@ -8,6 +8,7 @@ import {
   removeEntry,
   updateEntry,
 } from '../lib/data';
+import { Autocomplete } from '@react-google-maps/api';
 
 /**
  * Form that adds or edits an entry.
@@ -15,13 +16,21 @@ import {
  * If `entryId` === 'new' then creates a new entry.
  * Otherwise reads the entry and edits it.
  */
-export function TripEntryForm() {
+export function TripEntryForm({
+  onAddLocation,
+}: {
+  onAddLocation: (location: string, lat: number, lng: number) => void;
+}) {
   const { tripId } = useParams();
   const [entry, setEntry] = useState<Entry>();
-  // const [photoUrl, setPhotoUrl] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<unknown>();
   const [isDeleting, setIsDeleting] = useState(false);
+  const [location, setLocation] = useState('');
+  const [coordinates, setCoordinates] = useState<{
+    lat: number;
+    lng: number;
+  } | null>(null);
   const navigate = useNavigate();
   const isEditing = tripId && tripId !== 'new';
 
@@ -32,7 +41,6 @@ export function TripEntryForm() {
         const entry = await readTrip(id);
         if (!entry) throw new Error(`Entry with ID ${id} not found`);
         setEntry(entry);
-        // setPhotoUrl(entry.photoUrl); //added
       } catch (err) {
         setError(err);
       } finally {
@@ -41,6 +49,26 @@ export function TripEntryForm() {
     }
     if (isEditing) load(+tripId);
   }, [tripId, isEditing]);
+
+  const handlePlaceChanged = (
+    autocomplete: google.maps.places.Autocomplete | null
+  ) => {
+    if (!autocomplete) return;
+
+    const place = autocomplete.getPlace();
+    if (!place || !place.geometry || !place.geometry.location) {
+      console.error('No geometry available for selected place:', place);
+      return;
+    }
+
+    const lat = place.geometry.location.lat();
+    const lng = place.geometry.location.lng();
+    setLocation(place.formatted_address || '');
+    setCoordinates({ lat, lng });
+
+    // Call the function to add the new pin
+    onAddLocation(place.formatted_address || '', lat, lng);
+  };
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -54,6 +82,10 @@ export function TripEntryForm() {
         return;
       }
       const newEntry = Object.fromEntries(formData) as unknown as Entry;
+
+      newEntry.location = location; // Use the selected location name
+      newEntry.lat = coordinates?.lat ?? 0; // Default to 0 if undefined
+      newEntry.lng = coordinates?.lng ?? 0;
 
       if (isEditing) {
         updateEntry({ ...entry, ...newEntry });
@@ -97,13 +129,6 @@ export function TripEntryForm() {
 
       <form onSubmit={handleSubmit}>
         <div className="row margin-bottom-1">
-          {/* <div className="column-half">
-            <img
-              className="input-b-radius form-image"
-              src={photoUrl || '/images/placeholder-image-square.jpg'}
-              alt="entry"
-            />
-          </div> */}
           <div className="column-half">
             <label className="margin-bottom-1 d-block">
               Title
@@ -135,6 +160,16 @@ export function TripEntryForm() {
                 className="input-b-color text-padding input-b-radius purple-outline input-height margin-bottom-2 d-block width-100"
               />
             </label>
+            <label>Location</label>
+            <Autocomplete onLoad={(e) => handlePlaceChanged(e)}>
+              <input
+                name="location"
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+                required
+                placeholder="Enter a location"
+              />
+            </Autocomplete>
           </div>
         </div>
 
@@ -153,8 +188,6 @@ export function TripEntryForm() {
             </label>
           </div>
         </div>
-        {/* <UploadForm onUpload={setPhotoUrl} />
-        {photoUrl && <img src={photoUrl} alt="Uploaded preview" />} */}
 
         <div className="row">
           <div className="column-full d-flex justify-between">
