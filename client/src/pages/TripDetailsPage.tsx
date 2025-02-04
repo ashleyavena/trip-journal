@@ -59,7 +59,6 @@ export function TripDetailsPage() {
             </Link>
           </div>
         </div>
-        <p>{entry.description}</p>
       </div>
       <p>
         <strong>Description:</strong>{' '}
@@ -72,7 +71,7 @@ export function TripDetailsPage() {
         <strong>End Date:</strong> {entry.endDate}
       </p>
       <p>
-        <strong>Location:</strong> {entry.location || 'Location not available'}
+        <strong>Location:</strong> {entry?.location || 'Location not available'}
       </p>
 
       {/* Render the Carousel Component */}

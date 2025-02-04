@@ -29,6 +29,8 @@ export function TripEntryForm() {
   } | null>(null);
   const navigate = useNavigate();
   const isEditing = tripId && tripId !== 'new';
+  const [autocomplete, setAutocomplete] =
+    useState<google.maps.places.Autocomplete | null>(null);
 
   const { addPin } = usePins();
 
@@ -64,16 +66,14 @@ export function TripEntryForm() {
     load();
   }, [tripId, isEditing]);
 
-  let autocompleteInstance: google.maps.places.Autocomplete | null = null;
-
   const handleLoad = (autocomplete: google.maps.places.Autocomplete) => {
-    autocompleteInstance = autocomplete;
+    setAutocomplete(autocomplete);
   };
 
   const handlePlaceChanged = () => {
-    if (!autocompleteInstance) return;
+    if (!autocomplete) return;
 
-    const place = autocompleteInstance.getPlace();
+    const place = autocomplete.getPlace();
     console.log('Selected place:', place);
 
     if (!place || !place.geometry || !place.geometry.location) {

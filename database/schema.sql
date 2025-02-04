@@ -28,7 +28,7 @@ CREATE TABLE "Trips" (
 CREATE TABLE "Photos" (
   "photoId" serial PRIMARY KEY,
   "tripId" integer NOT NULL,
-  "photoUrl" text NOT NULL,
+  "photoUrl" text,
   "uploadedAt" timestamptz NOT NULL DEFAULT (now())
 );
 

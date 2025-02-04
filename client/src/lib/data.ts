@@ -115,8 +115,10 @@ export async function addTrip(newEntry: Entry) {
   }
 
   const { title, startDate, endDate, description, location } = newEntry;
-  if (!title || !startDate || !endDate) {
-    throw new Error('Title, start date, and end date are required fields.');
+  if (!title || !startDate || !endDate || !description || !location) {
+    throw new Error(
+      'Title, start, end date, desc, location are required fields.'
+    );
   }
   if (
     isNaN(new Date(startDate).getTime()) ||
@@ -178,21 +180,3 @@ export async function removeEntry(entryId: number) {
     throw new Error(`Failed to delete entry ${response.status}`);
   return (await response.json()) as Entry;
 }
-
-// export async function updateCoverPhoto(tripId: number, photoUrl: string) {
-//   const response = await fetch(`/api/trips/${tripId}/cover`, {
-//     method: 'PUT',
-//     headers: {
-//       'Content-Type': 'application/json',
-//       Authorization: `Bearer ${readToken()}`,
-//     },
-//     body: JSON.stringify({ coverPhoto: photoUrl }),
-//   });
-
-//   if (!response.ok) {
-//     throw new Error(`Failed to update cover photo: ${response.status}`);
-//   }
-
-//   const updatedEntry = (await response.json()) as Entry;
-//   return updatedEntry; // Return the updated entry with the new cover photo
-// }

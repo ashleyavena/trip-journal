@@ -56,6 +56,8 @@ export function EntryList() {
   );
 }
 function EntryCard({ entry }: { entry: Entry }) {
+  console.log('Image path:', entry.photos?.[0]?.photoUrl);
+
   return (
     <li className="entry-card">
       <div className="row">
@@ -63,29 +65,12 @@ function EntryCard({ entry }: { entry: Entry }) {
           <Link to={`/trip/${entry.tripId}`} className="block">
             <img
               className="input-b-radius form-image"
-              src={
-                entry.photos?.[0]?.photoUrl ||
-                '/images/placeholder-image-square.jpg'
-              }
+              src={entry.photos?.[0]?.photoUrl || '/images/placeholder.svg'}
               alt="entry"
             />
           </Link>
           <h3>{entry.title}</h3>
         </div>
-        {/* <div className="column-half">
-          <div className="row">
-            <div className="column-full d-flex justify-between">
-              <h3>{entry.title}</h3>
-              <Link to={`/details/${entry.tripId}`}>
-                <FaPencilAlt />
-              </Link>
-              <Link to={`/uploadImages/${entry.tripId}`}>
-                <IoMdPhotos />
-              </Link>
-            </div>
-          </div>
-          <p>{entry.description}</p>
-        </div> */}
       </div>
     </li>
   );

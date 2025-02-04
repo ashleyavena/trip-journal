@@ -154,15 +154,6 @@ app.post('/api/trips', authMiddleware, async (req, res, next) => {
     const tripResult = await db.query<Trips>(tripSql, tripParams);
     const tripId = tripResult.rows[0].tripId;
 
-    const photoSql = `
-    insert into "Photos" ("tripId", "photoUrl")
-    values ($1,$2)
-    returning *;
-    `;
-
-    const photoParams = [tripId];
-    const photoResult = await db.query(photoSql, photoParams);
-
     const locationSql = `
       INSERT INTO "Locations" ("tripId", "name", "latitude", "longitude")
       VALUES ($1, $2, $3, $4)
@@ -176,7 +167,7 @@ app.post('/api/trips', authMiddleware, async (req, res, next) => {
 
     res.status(201).json({
       trip: tripResult.rows[0],
-      photo: photoResult.rows[0].photoUrl,
+
       location: locationResult.rows[0],
     });
   } catch (error) {
@@ -189,18 +180,17 @@ app.get('/api/trips', authMiddleware, async (req, res, next) => {
   try {
     const sql = `
       SELECT t.*,
+             l."name" AS location,
+             l."latitude",
+             l."longitude",
              COALESCE(json_agg(p.*) FILTER (WHERE p."photoId" IS NOT NULL), '[]') AS photos
       FROM "Trips" t
       LEFT JOIN "Photos" p ON t."tripId" = p."tripId"
+       JOIN "Locations" l ON t."tripId" = l."tripId"
       WHERE t."userId" = $1
-      GROUP BY t."tripId";
+      GROUP BY t."tripId", l."name", l."latitude", l."longitude";  -- Include l."name" in GROUP BY
     `;
-    // `
-    //   select t.*, p."photoUrl"
-    //     from "Trips" t
-    //     left join "Photos" p on t."tripId" = p."tripId"
-    //   where t."userId" = $1;
-    // `;
+
     const result = await db.query<Trips>(sql, [req.user?.userId]);
     res.json(result.rows);
   } catch (err) {
@@ -213,21 +203,29 @@ app.get('/api/trips/:tripId', authMiddleware, async (req, res, next) => {
   try {
     const { tripId } = req.params;
     if (!Number.isInteger(+tripId)) {
-      throw new ClientError(400, 'Invalid entry');
+      throw new ClientError(400, 'Invalid tripId');
     }
+
     const sql = `
       SELECT t.*,
+             l."name" AS location,
+             l."latitude",
+             l."longitude",
              COALESCE(json_agg(p.*) FILTER (WHERE p."photoId" IS NOT NULL), '[]') AS photos
       FROM "Trips" t
       LEFT JOIN "Photos" p ON t."tripId" = p."tripId"
+      JOIN "Locations" l ON t."tripId" = l."tripId"
       WHERE t."tripId" = $1 AND t."userId" = $2
-      GROUP BY t."tripId";
+      GROUP BY t."tripId", l."name", l."latitude", l."longitude";
     `;
 
     const params = [tripId, req.user?.userId];
     const result = await db.query(sql, params);
+    console.log('trip data from db', result.rows[0]);
+
     const trip = result.rows[0];
     if (!trip) throw new ClientError(404, 'Entry not found');
+
     res.json(trip);
   } catch (err) {
     next(err);
@@ -240,8 +238,8 @@ app.put('/api/trips/:tripId', authMiddleware, async (req, res, next) => {
     const { title, description, startDate, endDate } = req.body;
     const sql = `
       update "Trips"
-      set "title" = $1, "description" = $2, "startDate" = $3, "endDate" = $4
-      where "tripId" = $5 and "userId" = $6
+      set "title" = $1, "description" = $2, "startDate" = $3, "endDate" = $4 "location" = $5
+      where "tripId" = $6 and "userId" = $7
       returning *;
     `;
     const params = [
@@ -265,12 +263,21 @@ app.delete('/api/trips/:tripId', authMiddleware, async (req, res, next) => {
   try {
     const { tripId } = req.params;
 
+    // Delete associated locations first
+    const deleteLocationsSql = `
+      DELETE FROM "Locations"
+      WHERE "tripId" = $1;
+    `;
+    await db.query(deleteLocationsSql, [tripId]);
+
+    // Delete associated photos next
     const deletePhotosSql = `
       DELETE FROM "Photos"
       WHERE "tripId" = $1;
     `;
     await db.query(deletePhotosSql, [tripId]);
 
+    // Now delete the trip
     const deleteTripSql = `
       DELETE FROM "Trips"
       WHERE "tripId" = $1 AND "userId" = $2
@@ -280,6 +287,7 @@ app.delete('/api/trips/:tripId', authMiddleware, async (req, res, next) => {
     const result = await db.query(deleteTripSql, [tripId, req.user?.userId]);
     if (!result.rows.length)
       throw new ClientError(404, 'Trip not found or unauthorized');
+
     res.status(204).send();
   } catch (error) {
     next(error);
