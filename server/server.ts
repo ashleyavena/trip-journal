@@ -143,7 +143,7 @@ app.post('/api/trips', authMiddleware, async (req, res, next) => {
     ) {
       throw new ClientError(400, 'Invalid date format');
     }
-    console.log('req body:', req.body);
+    console.log('RECEIVED DATA:', req.body);
 
     const tripSql = `
     insert into "Trips" ("userId", "title", "description", "startDate", "endDate")
@@ -170,6 +170,9 @@ app.post('/api/trips', authMiddleware, async (req, res, next) => {
     `;
     const locationParams = [tripId, location, lat.toString(), lng.toString()];
     const locationResult = await db.query(locationSql, locationParams);
+
+    console.log('Executing SQL:', locationSql);
+    console.log('With parameters:', locationParams);
 
     res.status(201).json({
       trip: tripResult.rows[0],
@@ -220,12 +223,7 @@ app.get('/api/trips/:tripId', authMiddleware, async (req, res, next) => {
       WHERE t."tripId" = $1 AND t."userId" = $2
       GROUP BY t."tripId";
     `;
-    // const sql = `
-    //   select t.*, p."photoUrl"
-    //   from "Trips" t
-    //   left join "Photos" p on t."tripId" = p."tripId"
-    //   where t."tripId" = $1 and t."userId" = $2;
-    // `;
+
     const params = [tripId, req.user?.userId];
     const result = await db.query(sql, params);
     const trip = result.rows[0];
@@ -379,35 +377,6 @@ app.get('/api/images', async (req, res, next) => {
   }
 });
 
-// Endpoint to update cover photo
-// app.put('/api/trips/:tripId/cover', authMiddleware, async (req, res, next) => {
-//   try {
-//     const { tripId } = req.params;
-//     const { coverPhoto } = req.body; // Get the cover photo URL from the request body
-
-//     if (!coverPhoto) {
-//       throw new ClientError(400, 'Cover photo URL is required');
-//     }
-
-//     const sql = `
-//       UPDATE "Trips"
-//       SET "coverPhoto" = $1
-//       WHERE "tripId" = $2 AND "userId" = $3
-//       RETURNING *;
-//     `;
-//     const params = [coverPhoto, tripId, req.user?.userId];
-//     const result = await db.query(sql, params);
-
-//     if (!result.rows.length) {
-//       throw new ClientError(404, 'Trip not found or unauthorized');
-//     }
-
-//     res.json(result.rows[0]); // Return the updated trip with the new cover photo
-//   } catch (err) {
-//     next(err);
-//   }
-// });
-
 /*
  * Handles paths that aren't handled by any other route handler.
  * It responds with `index.html` to support page refreshes with React Router.
@@ -420,5 +389,3 @@ app.use(errorMiddleware);
 app.listen(process.env.PORT, () => {
   console.log('Listening on port', process.env.PORT);
 });
-
-// data

@@ -9,30 +9,28 @@ import {
   updateEntry,
 } from '../lib/data';
 import { Autocomplete } from '@react-google-maps/api';
+import { usePins } from '../components/PinsContext';
 
-/**
- * Form that adds or edits an entry.
- * Gets `entryId` from route.
- * If `entryId` === 'new' then creates a new entry.
- * Otherwise reads the entry and edits it.
- */
-export function TripEntryForm({
-  onAddLocation,
-}: {
-  onAddLocation: (location: string, lat: number, lng: number) => void;
-}) {
+// type onAddLocationProps = {
+//   onAddLocation: (location: string, lat: number, lng: number) => void;
+// };
+
+export function TripEntryForm() {
   const { tripId } = useParams();
   const [entry, setEntry] = useState<Entry>();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<unknown>();
   const [isDeleting, setIsDeleting] = useState(false);
   const [location, setLocation] = useState('');
+  const [description, setDescription] = useState('');
   const [coordinates, setCoordinates] = useState<{
     lat: number;
     lng: number;
   } | null>(null);
   const navigate = useNavigate();
   const isEditing = tripId && tripId !== 'new';
+
+  const { addPin } = usePins();
 
   useEffect(() => {
     async function load(id: number) {
@@ -50,14 +48,37 @@ export function TripEntryForm({
     if (isEditing) load(+tripId);
   }, [tripId, isEditing]);
 
-  const handlePlaceChanged = (
-    autocomplete: google.maps.places.Autocomplete | null
-  ) => {
-    if (!autocomplete) return;
+  //  to save location in form
+  useEffect(() => {
+    async function load() {
+      if (tripId && isEditing) {
+        const entryData = await readTrip(+tripId);
+        setEntry(entryData);
+        setLocation(entryData?.location || ''); // sets location input field
+        setCoordinates({
+          lat: entryData?.lat || 0,
+          lng: entryData?.lng || 0,
+        });
+      }
+    }
+    load();
+  }, [tripId, isEditing]);
 
-    const place = autocomplete.getPlace();
+  let autocompleteInstance: google.maps.places.Autocomplete | null = null;
+
+  const handleLoad = (autocomplete: google.maps.places.Autocomplete) => {
+    autocompleteInstance = autocomplete;
+  };
+
+  const handlePlaceChanged = () => {
+    if (!autocompleteInstance) return;
+
+    const place = autocompleteInstance.getPlace();
+    console.log('Selected place:', place);
+
     if (!place || !place.geometry || !place.geometry.location) {
       console.error('No geometry available for selected place:', place);
+      alert('Unable to retrieve location data for the selected place.');
       return;
     }
 
@@ -66,8 +87,8 @@ export function TripEntryForm({
     setLocation(place.formatted_address || '');
     setCoordinates({ lat, lng });
 
-    // Call the function to add the new pin
-    onAddLocation(place.formatted_address || '', lat, lng);
+    // Call onAddLocation when location is selected
+    addPin(place.formatted_address || '', lat, lng);
   };
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -82,7 +103,7 @@ export function TripEntryForm({
         return;
       }
       const newEntry = Object.fromEntries(formData) as unknown as Entry;
-
+      newEntry.description = description;
       newEntry.location = location; // Use the selected location name
       newEntry.lat = coordinates?.lat ?? 0; // Default to 0 if undefined
       newEntry.lng = coordinates?.lng ?? 0;
@@ -160,16 +181,22 @@ export function TripEntryForm({
                 className="input-b-color text-padding input-b-radius purple-outline input-height margin-bottom-2 d-block width-100"
               />
             </label>
-            <label>Location</label>
-            <Autocomplete onLoad={(e) => handlePlaceChanged(e)}>
-              <input
-                name="location"
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
-                required
-                placeholder="Enter a location"
-              />
-            </Autocomplete>
+            <div>
+              <label className="margin-bottom-1 d-block">
+                Location
+                <Autocomplete
+                  onPlaceChanged={handlePlaceChanged}
+                  onLoad={handleLoad}>
+                  <input
+                    name="location"
+                    value={location}
+                    onChange={(e) => setLocation(e.target.value)}
+                    required
+                    placeholder="Enter a location"
+                  />
+                </Autocomplete>
+              </label>
+            </div>
           </div>
         </div>
 
@@ -178,8 +205,9 @@ export function TripEntryForm({
             <label className="margin-bottom-1 d-block">
               Description
               <textarea
-                name="notes"
-                defaultValue={entry?.description ?? ''}
+                name="description"
+                value={description} // Bind this to the state
+                onChange={(e) => setDescription(e.target.value)} // Update the state on change
                 required
                 className="input-b-color text-padding input-b-radius purple-outline d-block width-100"
                 cols={30}

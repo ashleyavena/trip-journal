@@ -18,9 +18,27 @@ export type Entry = {
   endDate: number;
   photos: Photo[];
   coverPhoto?: string;
-  location?: string;
-  lat?: number;
-  lng?: number;
+  location: string;
+  lat: number;
+  lng: number;
+};
+
+export type LocationProps = {
+  lat: number;
+  lng: number;
+  name: string;
+};
+
+export type MapProps = {
+  locations: LocationProps[];
+};
+
+export type PoiMarkersProps = {
+  pois: LocationProps[];
+};
+
+export type OnAddLocationProps = {
+  onAddLocation: (location: string, lat: number, lng: number) => void;
 };
 
 const authKey = 'um.auth';
@@ -82,6 +100,7 @@ export async function readTrip(tripId: number): Promise<Entry | undefined> {
       Authorization: `Bearer ${readToken()}`,
     },
   });
+  console.log('Response from /api/trips:', response);
   if (!response.ok) {
     throw new Error(`Failed to fetch trip. Status: ${response.status}`);
   }
@@ -95,7 +114,7 @@ export async function addTrip(newEntry: Entry) {
     throw new Error('User is not authenticated');
   }
 
-  const { title, startDate, endDate } = newEntry;
+  const { title, startDate, endDate, description, location } = newEntry;
   if (!title || !startDate || !endDate) {
     throw new Error('Title, start date, and end date are required fields.');
   }
@@ -111,9 +130,10 @@ export async function addTrip(newEntry: Entry) {
     userId,
     startDate: new Date(startDate),
     endDate: new Date(endDate),
+    description,
+    location,
   };
 
-  console.log('userId', userId);
   console.log('Sending trip data:', entryData);
 
   const response = await fetch('/api/trips', {
