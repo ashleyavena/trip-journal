@@ -8,6 +8,8 @@ import argon2 from 'argon2';
 import { nextTick } from 'process';
 import { uploadsMiddleware } from './lib/uploads-middleware.js';
 
+pg.types.setTypeParser(pg.types.builtins.NUMERIC, (x) => parseFloat(x));
+
 type User = {
   userId: number;
   username: string;
@@ -386,11 +388,12 @@ app.get('/api/images', async (req, res, next) => {
 });
 
 // API endpoint to get all locations for the user
-app.get('/api/trips/locations', authMiddleware, async (req, res, next) => {
+app.get('/api/locations', authMiddleware, async (req, res, next) => {
   try {
     const sql = `
-      SELECT "latitude", "longitude", "name"
+      SELECT "latitude" as "lat", "longitude" as "lng", "name", "tripId"
       FROM "Locations"
+      JOIN "Trips" USING ("tripId")
       WHERE "userId" = $1;
     `;
     const result = await db.query(sql, [req.user?.userId]);
@@ -399,7 +402,7 @@ app.get('/api/trips/locations', authMiddleware, async (req, res, next) => {
     next(err);
   }
 });
-
+//
 /*
  * Handles paths that aren't handled by any other route handler.
  * It responds with `index.html` to support page refreshes with React Router.

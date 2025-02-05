@@ -109,7 +109,7 @@ export async function readTrip(tripId: number): Promise<Entry | undefined> {
 }
 
 // This function will fetch all the locations of trips for the user
-
+//
 export async function readAllTripLocations(): Promise<
   { lat: number; lng: number; name: string }[]
 > {
@@ -121,7 +121,7 @@ export async function readAllTripLocations(): Promise<
     },
   };
 
-  const res = await fetch('/api/trips/locations', req);
+  const res = await fetch('/api/locations', req);
   if (!res.ok) {
     console.error('Fetch error details:', {
       status: res.status,

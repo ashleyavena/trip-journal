@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react';
 import {
   AdvancedMarker,
   APIProvider,
@@ -6,6 +5,7 @@ import {
   MapCameraChangedEvent,
   Pin,
 } from '@vis.gl/react-google-maps';
+import { useEffect, useState } from 'react';
 import { usePins } from '../components/PinsContext';
 import { readAllTripLocations } from '../lib/data';
 
@@ -17,16 +17,13 @@ export function MapPage() {
   >([]);
 
   useEffect(() => {
-    setIsLoaded(true);
-  }, []);
-
-  useEffect(() => {
     const fetchLocations = async () => {
       try {
         const locations = await readAllTripLocations();
         setTripLocations(locations);
       } catch (error) {
         console.error('Error fetching trip locations:', error);
+      } finally {
         setIsLoaded(true);
       }
     };
@@ -43,21 +40,29 @@ export function MapPage() {
     name: string;
   };
 
+  function handleMarkerClick(
+    e: google.maps.marker.AdvancedMarkerClickEvent
+  ): void {
+    console.log('e', e.target);
+  }
+
   // Default locations
   // const defaultLocations: Poi[] = [
   //   { name: 'Sydney Opera House', lat: -33.8567844, lng: 151.213108 },
   //   { name: 'Harbour Bridge', lat: -33.852228, lng: 151.2038374 },
   // ];
 
-  // Merge default locations with user-added pins
-
   const allPins = [...tripLocations, ...pins];
+  console.log('all pins:', allPins);
 
   // PoiMarkers component for displaying markers
   const PoiMarkers = ({ pois }: { pois: Poi[] }) => (
     <>
       {pois.map((poi, index) => (
-        <AdvancedMarker key={index} position={{ lat: poi.lat, lng: poi.lng }}>
+        <AdvancedMarker
+          key={index}
+          onClick={handleMarkerClick}
+          position={{ lat: poi.lat, lng: poi.lng }}>
           <Pin
             background={'#FBBC04'}
             glyphColor={'#000'}
@@ -90,4 +95,4 @@ export function MapPage() {
   );
 }
 
-// add a use Effect and add an endpoint that reads all trips and return it toin MapPage
+// add a use Effect and add an endpoint that reads all trips and return it to in MapPage
