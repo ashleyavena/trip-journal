@@ -28,7 +28,7 @@ CREATE TABLE "Trips" (
 CREATE TABLE "Photos" (
   "photoId" serial PRIMARY KEY,
   "tripId" integer NOT NULL,
-  "photoUrl" text NOT NULL,
+  "photoUrl" text,
   "uploadedAt" timestamptz NOT NULL DEFAULT (now())
 );
 
@@ -36,8 +36,8 @@ CREATE TABLE "Locations" (
   "locationId" serial PRIMARY KEY,
   "tripId" integer NOT NULL,
   "name" text NOT NULL,
-  "latitude" text NOT NULL,
-  "longitude" text NOT NULL
+  "latitude" NUMERIC NOT NULL,
+  "longitude" NUMERIC NOT NULL
 );
 
 COMMENT ON COLUMN "Trips"."description" IS 'Content of the post';

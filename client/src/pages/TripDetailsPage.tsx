@@ -17,7 +17,9 @@ export function TripDetailsPage() {
       setIsLoading(true);
       try {
         const trip = await readTrip(Number(tripId));
+        console.log('Trip data received:', trip);
         if (trip) {
+          console.log('2 received:', trip);
           setEntry(trip);
         } else {
           setEntry(null);
@@ -57,16 +59,19 @@ export function TripDetailsPage() {
             </Link>
           </div>
         </div>
-        <p>{entry.description}</p>
       </div>
       <p>
-        <strong>Description:</strong> {entry.description}
+        <strong>Description:</strong>{' '}
+        {entry?.description || 'Description not available'}
       </p>
       <p>
         <strong>Start Date:</strong> {entry.startDate}
       </p>
       <p>
         <strong>End Date:</strong> {entry.endDate}
+      </p>
+      <p>
+        <strong>Location:</strong> {entry?.location || 'Location not available'}
       </p>
 
       {/* Render the Carousel Component */}
@@ -80,35 +85,3 @@ export function TripDetailsPage() {
     </div>
   );
 }
-//   return (
-//     <div className="container">
-//       <h1>{entry.title}</h1>
-//       <p>
-//         <strong>Description:</strong> {entry.description}
-//       </p>
-//       <p>
-//         <strong>Start Date:</strong> {entry.startDate}
-//       </p>
-//       <p>
-//         <strong>End Date:</strong> {entry.endDate}
-//       </p>
-
-//       <div className="photos">
-//         <h3>Photos:</h3>
-//         {entry.photos?.map((photo, index) => {
-//           // console.log('TripDetailsPage - Photos:', entry.photos);
-
-//           return (
-//             <div key={index}>
-//               <img
-//                 src={photo.photoUrl}
-//                 alt={`Photo ${index + 1}`}
-//                 style={{ width: '200px', height: 'auto', margin: '10px' }}
-//               />
-//             </div>
-//           );
-//         })}
-//       </div>
-//     </div>
-//   );
-// }

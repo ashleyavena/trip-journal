@@ -18,6 +18,27 @@ export type Entry = {
   endDate: number;
   photos: Photo[];
   coverPhoto?: string;
+  location: string;
+  lat: number;
+  lng: number;
+};
+
+export type LocationProps = {
+  lat: number;
+  lng: number;
+  name: string;
+};
+
+export type MapProps = {
+  locations: LocationProps[];
+};
+
+export type PoiMarkersProps = {
+  pois: LocationProps[];
+};
+
+export type OnAddLocationProps = {
+  onAddLocation: (location: string, lat: number, lng: number) => void;
 };
 
 const authKey = 'um.auth';
@@ -79,6 +100,7 @@ export async function readTrip(tripId: number): Promise<Entry | undefined> {
       Authorization: `Bearer ${readToken()}`,
     },
   });
+  console.log('Response from /api/trips:', response);
   if (!response.ok) {
     throw new Error(`Failed to fetch trip. Status: ${response.status}`);
   }
@@ -86,15 +108,45 @@ export async function readTrip(tripId: number): Promise<Entry | undefined> {
   return data;
 }
 
+// This function will fetch all the locations of trips for the user
+//
+export async function readAllTripLocations(): Promise<
+  { lat: number; lng: number; name: string }[]
+> {
+  const req = {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${readToken()}`,
+    },
+  };
+
+  const res = await fetch('/api/locations', req);
+  if (!res.ok) {
+    console.error('Fetch error details:', {
+      status: res.status,
+      statusText: res.statusText,
+    });
+    throw new Error(`Failed to fetch trip locations. Status: ${res.status}`);
+  }
+
+  const locations = await res.json();
+  console.log('Fetched trip locations:', locations);
+  return locations; // Returns an array of locations { lat, lng, name }
+}
+
+// addTrip
 export async function addTrip(newEntry: Entry) {
   const userId = readUser()?.userId;
   if (!userId) {
     throw new Error('User is not authenticated');
   }
 
-  const { title, startDate, endDate } = newEntry;
-  if (!title || !startDate || !endDate) {
-    throw new Error('Title, start date, and end date are required fields.');
+  const { title, startDate, endDate, description, location } = newEntry;
+  if (!title || !startDate || !endDate || !description || !location) {
+    throw new Error(
+      'Title, start, end date, desc, location are required fields.'
+    );
   }
   if (
     isNaN(new Date(startDate).getTime()) ||
@@ -108,9 +160,10 @@ export async function addTrip(newEntry: Entry) {
     userId,
     startDate: new Date(startDate),
     endDate: new Date(endDate),
+    description,
+    location,
   };
 
-  console.log('userId', userId);
   console.log('Sending trip data:', entryData);
 
   const response = await fetch('/api/trips', {
@@ -155,21 +208,3 @@ export async function removeEntry(entryId: number) {
     throw new Error(`Failed to delete entry ${response.status}`);
   return (await response.json()) as Entry;
 }
-
-// export async function updateCoverPhoto(tripId: number, photoUrl: string) {
-//   const response = await fetch(`/api/trips/${tripId}/cover`, {
-//     method: 'PUT',
-//     headers: {
-//       'Content-Type': 'application/json',
-//       Authorization: `Bearer ${readToken()}`,
-//     },
-//     body: JSON.stringify({ coverPhoto: photoUrl }),
-//   });
-
-//   if (!response.ok) {
-//     throw new Error(`Failed to update cover photo: ${response.status}`);
-//   }
-
-//   const updatedEntry = (await response.json()) as Entry;
-//   return updatedEntry; // Return the updated entry with the new cover photo
-// }
