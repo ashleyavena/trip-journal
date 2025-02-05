@@ -385,6 +385,21 @@ app.get('/api/images', async (req, res, next) => {
   }
 });
 
+// API endpoint to get all locations for the user
+app.get('/api/trips/locations', authMiddleware, async (req, res, next) => {
+  try {
+    const sql = `
+      SELECT "latitude", "longitude", "name"
+      FROM "Locations"
+      WHERE "userId" = $1;
+    `;
+    const result = await db.query(sql, [req.user?.userId]);
+    res.json(result.rows);
+  } catch (err) {
+    next(err);
+  }
+});
+
 /*
  * Handles paths that aren't handled by any other route handler.
  * It responds with `index.html` to support page refreshes with React Router.

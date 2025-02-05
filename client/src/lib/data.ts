@@ -108,6 +108,34 @@ export async function readTrip(tripId: number): Promise<Entry | undefined> {
   return data;
 }
 
+// This function will fetch all the locations of trips for the user
+
+export async function readAllTripLocations(): Promise<
+  { lat: number; lng: number; name: string }[]
+> {
+  const req = {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${readToken()}`,
+    },
+  };
+
+  const res = await fetch('/api/trips/locations', req);
+  if (!res.ok) {
+    console.error('Fetch error details:', {
+      status: res.status,
+      statusText: res.statusText,
+    });
+    throw new Error(`Failed to fetch trip locations. Status: ${res.status}`);
+  }
+
+  const locations = await res.json();
+  console.log('Fetched trip locations:', locations);
+  return locations; // Returns an array of locations { lat, lng, name }
+}
+
+// addTrip
 export async function addTrip(newEntry: Entry) {
   const userId = readUser()?.userId;
   if (!userId) {

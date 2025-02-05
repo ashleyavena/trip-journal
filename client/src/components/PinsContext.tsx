@@ -1,12 +1,11 @@
 import React, { createContext, useState, useContext } from 'react';
 
-// Create the context for pins
 const PinsContext = createContext<{
   pins: { lat: number; lng: number; name: string }[];
   addPin: (location: string, lat: number, lng: number) => void;
-} | null>(null);
+}>({ pins: [], addPin: () => undefined });
 
-// Custom hook to use PinsContext
+// hook to use PinsContext
 export const usePins = () => {
   const context = useContext(PinsContext);
   if (!context) {
@@ -31,3 +30,5 @@ export const PinsProvider = ({ children }: { children: React.ReactNode }) => {
     </PinsContext.Provider>
   );
 };
+
+// add a use Effect and add an endpoint that reads all trips and return it to  MapPage

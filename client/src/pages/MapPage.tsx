@@ -7,17 +7,31 @@ import {
   Pin,
 } from '@vis.gl/react-google-maps';
 import { usePins } from '../components/PinsContext';
-
-// type MapProps = {
-//   locations: { lat: number; lng: number; name: string }[];
-// };
+import { readAllTripLocations } from '../lib/data';
 
 export function MapPage() {
   const { pins } = usePins();
   const [isLoaded, setIsLoaded] = useState(false);
+  const [tripLocations, setTripLocations] = useState<
+    { lat: number; lng: number; name: string }[]
+  >([]);
 
   useEffect(() => {
     setIsLoaded(true);
+  }, []);
+
+  useEffect(() => {
+    const fetchLocations = async () => {
+      try {
+        const locations = await readAllTripLocations();
+        setTripLocations(locations);
+      } catch (error) {
+        console.error('Error fetching trip locations:', error);
+        setIsLoaded(true);
+      }
+    };
+
+    fetchLocations();
   }, []);
 
   const mapID = '67ffa5c4542cb48d'; // Map ID for styling
@@ -30,13 +44,14 @@ export function MapPage() {
   };
 
   // Default locations
-  const defaultLocations: Poi[] = [
-    { name: 'Sydney Opera House', lat: -33.8567844, lng: 151.213108 },
-    { name: 'Harbour Bridge', lat: -33.852228, lng: 151.2038374 },
-  ];
+  // const defaultLocations: Poi[] = [
+  //   { name: 'Sydney Opera House', lat: -33.8567844, lng: 151.213108 },
+  //   { name: 'Harbour Bridge', lat: -33.852228, lng: 151.2038374 },
+  // ];
 
   // Merge default locations with user-added pins
-  const allPins = [...defaultLocations, ...pins];
+
+  const allPins = [...tripLocations, ...pins];
 
   // PoiMarkers component for displaying markers
   const PoiMarkers = ({ pois }: { pois: Poi[] }) => (
@@ -74,3 +89,5 @@ export function MapPage() {
     <div>Loading Map...</div>
   );
 }
+
+// add a use Effect and add an endpoint that reads all trips and return it toin MapPage
