@@ -32,21 +32,25 @@ export function EntryList() {
     );
 
   return (
-    <div className="entry-list-container bg-cover bg-center bg-no-repeat sm:bg-[url('../public/mobileLogin.jpg')] md:bg-[url('../public/desktopHome.jpg')]">
-      <div className="container mt-10">
-        <div className="row">
+    <div className="entry-list-container min-h-screen bg-cover bg-center bg-no-repeat bg-fixed bg-[url('../public/mobileCancun.jpg')] md:bg-[url('../public/desktopHome.jpg')]">
+      <div className="container mt-20">
+        <div className="flex flex-col justify-center items-center text-center mb-10">
           <div className="column-full d-flex justify-between align-center">
-            <h1 className="text-2xl font-bold text-white">Entries</h1>
+            <h1 className="playwrite-vn-400 text-white mb-10">
+              Relieve and Wander Through Your Journeys
+            </h1>
             <h3>
-              <Link to="/trips/new" className="white-text form-link">
-                NEW
+              <Link
+                to="/details/new"
+                className="dancing-script-400 white-text form-link">
+                record a new trip
               </Link>
             </h3>
           </div>
         </div>
         <div className="row">
           <div className="column-full">
-            <ul className="entry-ul">
+            <ul className="entry-ul flex flex-wrap gap-4 justify-center">
               {entries.map((entry) => (
                 <EntryCard key={entry.tripId} entry={entry} />
               ))}
@@ -71,7 +75,7 @@ function EntryCard({ entry }: { entry: Entry }) {
               alt="entry"
             />
           </Link>
-          <h3 className="text-white">{entry.title}</h3>
+          <h3 className="text-white text-center mt-2">{entry.title}</h3>
         </div>
       </div>
     </li>

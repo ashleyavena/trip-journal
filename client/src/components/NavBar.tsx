@@ -11,20 +11,24 @@ export function NavBar() {
     <>
       {/* Full navbar (hidden on mobile) */}
       {!shouldHideNavbar && (
-        <header className="bg-purple-700 fixed top-0 w-full z-50 shadow-md">
+        <header className="bg-black fixed top-0 w-full z-50 shadow-md">
           <div className="container mx-auto px-6">
             <div className="flex items-center justify-between py-4">
-              {/* Logo / Title */}
-              <h1 className="text-white text-lg font-bold">Trip Journal</h1>
-
+              <a href="/trips">
+                <h1 className="font-serif text-white text-lg font-bold">
+                  Trip Journal
+                </h1>
+              </a>
               {/* Navigation Links (hidden on mobile) */}
               <nav className="hidden md:flex items-center space-x-6">
                 <Link
                   to="/details/new"
-                  className="entries-link text-white hover:underline">
+                  className="entries-link text-white hover:underline text-lg">
                   New Entry
                 </Link>
-                <Link to="/map" className="text-white hover:underline">
+                <Link
+                  to="/map"
+                  className="entries-link text-white hover:underline">
                   Map
                 </Link>
                 <Link
@@ -39,21 +43,16 @@ export function NavBar() {
         </header>
       )}
 
-      {/* Bottom Navbar (Visible on mobile) */}
+      {/* Bottom Navbar ( mobile) */}
       {!shouldHideNavbar && (
-        <div className="fixed bottom-0 w-full bg-purple-700 z-50 shadow-md md:hidden">
+        <div className="fixed bottom-0 w-full bg-white bg-opacity-5 z-50 shadow-md md:hidden backdrop-blur-md">
           <div className="container mx-auto flex justify-around py-3">
-            {/* Home Icon */}
             <Link to="/trips" className="text-white text-2xl">
               <FaHome />
             </Link>
-
-            {/* New Entry Icon */}
             <Link to="/details/new" className="text-white text-2xl">
               <FaPlus />
             </Link>
-
-            {/* Map Icon */}
             <Link to="/map" className="text-white text-2xl">
               <FaGlobe />
             </Link>

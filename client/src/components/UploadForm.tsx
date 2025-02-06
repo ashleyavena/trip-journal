@@ -14,6 +14,13 @@ type UploadFormProps = {
 export function UploadForm({ tripId }: UploadFormProps) {
   const [imageUrls, setImageUrls] = useState<string[]>([]); // store uploaded image URLs
   const navigate = useNavigate();
+  const [fileCount, setFileCount] = useState<number>(0); // Store the number of selected files
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files) {
+      setFileCount(event.target.files.length); // Update the file count
+    }
+  };
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -43,24 +50,33 @@ export function UploadForm({ tripId }: UploadFormProps) {
       console.log('Error message:', error);
     }
   }
-  //   // formData.append('tripId', tripId); = <input type="hidden" name="tripId" value={tripId} />
+
   return (
-    <div>
-      <form onSubmit={handleSubmit}>
-        <label>
-          Caption:
-          <input required autoFocus type="text" id="caption" name="caption" />
-        </label>
-        <br />
+    <div
+      className="min-h-screen w-full flex flex-col items-center justify-center bg-cover bg-center"
+      style={{ backgroundImage: "url('../public/collage.jpg')" }}>
+      <form
+        onSubmit={handleSubmit}
+        className="flex flex-col items-center gap-4">
         <input type="hidden" name="tripId" value={tripId} />
-        <input
-          required
-          type="file"
-          name="photos" //  name should match the backend field name
-          accept=".png, .jpg, .jpeg, .gif"
-          multiple
-        />
-        <button type="submit">Upload</button>
+
+        {/* Custom File Upload Button */}
+        <label className="cursor-pointer bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">
+          {fileCount > 0 ? `${fileCount} files selected` : 'Select Photos'}
+
+          <input
+            required
+            type="file"
+            name="photos"
+            accept=".png, .jpg, .jpeg, .gif"
+            multiple
+            className="hidden"
+            onChange={handleFileChange}
+          />
+        </label>
+        <button className="bg-blue-600 text-white" type="submit">
+          Upload
+        </button>
       </form>
 
       {imageUrls.length > 0 && (

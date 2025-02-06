@@ -139,50 +139,52 @@ export function TripEntryForm() {
       </div>
     );
   }
-
   return (
-    <div className="container">
-      <div className="row">
-        <div className="column-full d-flex justify-between">
-          <h1>{isEditing ? 'Edit Entry' : 'New Entry'}</h1>
+    <div className="min-h-screen flex items-center justify-center  bg-cover bg-center bg-no-repeat bg-[url('../public/mobileLogin.jpg')] md:bg-[url('../public/desktopHome.jpg')]">
+      <div className="container w-full max-w-2xl p-4  bg-opacity-75 rounded-md shadow-lg">
+        <div className="row mb-4">
+          <div className="column-full text-center">
+            <h1>{isEditing ? 'Edit Entry' : 'New Entry'}</h1>
+          </div>
         </div>
-      </div>
 
-      <form onSubmit={handleSubmit}>
-        <div className="row margin-bottom-1">
-          <div className="column-half">
-            <label className="margin-bottom-1 d-block">
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="space-y-4">
+            <label className="d-block">
               Title
               <input
                 name="title"
                 defaultValue={entry?.title ?? ''}
                 required
-                className="input-b-color text-padding input-b-radius purple-outline input-height margin-bottom-2 d-block width-100"
+                className="input-b-color text-padding input-b-radius purple-outline input-height d-block w-full"
                 type="text"
               />
             </label>
-            <label className="margin-bottom-1 d-block">
+
+            <label className="d-block">
               Start Date
               <input
                 name="startDate"
                 type="date"
                 defaultValue={entry?.startDate ?? ''}
                 required
-                className="input-b-color text-padding input-b-radius purple-outline input-height margin-bottom-2 d-block width-100"
+                className="input-b-color text-padding input-b-radius purple-outline input-height d-block w-full"
               />
             </label>
-            <label className="margin-bottom-1 d-block">
+
+            <label className="d-block">
               End Date
               <input
                 name="endDate"
                 type="date"
                 defaultValue={entry?.endDate ?? ''}
                 required
-                className="input-b-color text-padding input-b-radius purple-outline input-height margin-bottom-2 d-block width-100"
+                className="input-b-color text-padding input-b-radius purple-outline input-height d-block w-full"
               />
             </label>
+
             <div>
-              <label className="margin-bottom-1 d-block">
+              <label className="d-block">
                 Location
                 <Autocomplete
                   onPlaceChanged={handlePlaceChanged}
@@ -193,32 +195,29 @@ export function TripEntryForm() {
                     onChange={(e) => setLocation(e.target.value)}
                     required
                     placeholder="Enter a location"
+                    className="input-b-color text-padding input-b-radius purple-outline w-full"
                   />
                 </Autocomplete>
               </label>
             </div>
           </div>
-        </div>
 
-        <div className="row margin-bottom-1">
-          <div className="column-full">
-            <label className="margin-bottom-1 d-block">
+          <div>
+            <label className="d-block">
               Description
               <textarea
                 name="description"
                 value={description} // Bind this to the state
                 onChange={(e) => setDescription(e.target.value)} // Update the state on change
                 required
-                className="input-b-color text-padding input-b-radius purple-outline d-block width-100"
+                className="input-b-color text-padding input-b-radius purple-outline w-full"
                 cols={30}
                 rows={10}
               />
             </label>
           </div>
-        </div>
 
-        <div className="row">
-          <div className="column-full d-flex justify-between">
+          <div className="flex justify-between">
             {isEditing && (
               <button
                 className="delete-entry-button"
@@ -231,31 +230,30 @@ export function TripEntryForm() {
               SAVE
             </button>
           </div>
-        </div>
-      </form>
-      {isDeleting && (
-        <div
-          id="modalContainer"
-          className="modal-container d-flex justify-center align-center">
-          <div className="modal row">
-            <div className="column-full d-flex justify-center">
-              <p>Are you sure you want to delete this entry?</p>
-            </div>
-            <div className="column-full d-flex justify-between">
-              <button
-                className="modal-button"
-                onClick={() => setIsDeleting(false)}>
-                Cancel
-              </button>
-              <button
-                className="modal-button red-background white-text"
-                onClick={handleDelete}>
-                Confirm
-              </button>
+        </form>
+
+        {isDeleting && (
+          <div
+            id="modalContainer"
+            className="modal-container flex justify-center items-center">
+            <div className="modal p-4 w-96 bg-white rounded-md shadow-lg">
+              <div className="column-full text-center mb-4">
+                <p>Are you sure you want to delete this entry?</p>
+              </div>
+              <div className="column-full flex justify-between">
+                <button
+                  className="modal-button-cancel"
+                  onClick={() => setIsDeleting(false)}>
+                  Cancel
+                </button>
+                <button className="modal-button-confirm" onClick={handleDelete}>
+                  Confirm
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }

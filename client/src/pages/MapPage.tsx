@@ -40,11 +40,11 @@ export function MapPage() {
     name: string;
   };
 
-  function handleMarkerClick(
-    e: google.maps.marker.AdvancedMarkerClickEvent
-  ): void {
-    console.log('e', e.target);
-  }
+  // function handleMarkerClick(
+  //   e: google.maps.marker.AdvancedMarkerClickEvent
+  // ): void {
+  //   console.log('e', e.target);
+  // }
 
   // Default locations
   // const defaultLocations: Poi[] = [
@@ -61,7 +61,7 @@ export function MapPage() {
       {pois.map((poi, index) => (
         <AdvancedMarker
           key={index}
-          onClick={handleMarkerClick}
+          // onClick={handleMarkerClick}
           position={{ lat: poi.lat, lng: poi.lng }}>
           <Pin
             background={'#FBBC04'}
