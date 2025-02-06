@@ -47,24 +47,23 @@ export function TripDetailsPage() {
     );
   }
   if (!entry) return <div>No trip found</div>;
+
+  const pinLocation = {
+    lat: entry?.lat || 40.7128, //New York
+    lng: entry?.lng || -74.006,
+  };
+
   const handlePinClick = () => {
-    if (entry?.lat && entry?.lng) {
-      navigate('/map', {
-        state: {
-          location: entry?.location,
-          lat: entry?.lat,
-          lng: entry?.lng,
-        },
-      });
+    if (pinLocation.lat && pinLocation.lng) {
+      navigate('/map', { state: { pinLocation } });
+      console.log('map was gone to:', entry);
     }
   };
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-fixed bg-cover bg-center bg-no-repeat bg-[url('../public/desktopHome.jpg')] p-6">
-      <div className="w-full max-w-3xl bg-white/80 p-6 rounded-md shadow-lg">
-        <h1 className="text-2xl font-bold text-center mb-4">{entry.title}</h1>
-
-        <div className="flex justify-center gap-4 mb-4">
+      <div className="w-full max-w-3xl bg-white/80 p-6 rounded-md shadow-lg relative">
+        <div className="absolute top-3 right-3 flex space-x-3">
           <Link
             to={`/details/${entry.tripId}`}
             className="text-xl text-blue-500">
@@ -77,19 +76,25 @@ export function TripDetailsPage() {
           </Link>
         </div>
 
-        {/* Render the Carousel Component */}
+        <h1 className="ysabeau-sc-300 text-2xl font-bold text-center mb-4">
+          {entry.title}
+        </h1>
+
         {entry.photos && entry.photos.length > 0 && (
-          <Carousel photos={entry.photos.map((photo) => photo.photoUrl)} />
+          <div className="mb-8">
+            <Carousel photos={entry.photos.map((photo) => photo.photoUrl)} />
+          </div>
         )}
 
-        {/* Fallback if there are no photos */}
         {!entry.photos ||
           (entry.photos.length === 0 && <p>No photos available</p>)}
 
         <p className="flex items-center space-x-2">
-          <button onClick={handlePinClick} className="text-xl text-blue-500">
-            <FaMapPin />
-          </button>
+          <FaMapPin
+            onClick={handlePinClick}
+            className="text-xl text-blue-500 cursor-pointer"
+          />
+
           <strong>Location:</strong>
           <span>{entry?.location || 'Location not available'}</span>
         </p>

@@ -180,11 +180,12 @@ app.post('/api/trips', authMiddleware, async (req, res, next) => {
 // api to get multiple photos per trip
 app.get('/api/trips', authMiddleware, async (req, res, next) => {
   try {
+    // change to as"lat"
     const sql = `
       SELECT t.*,
              l."name" AS location,
-             l."latitude",
-             l."longitude",
+             l."latitude" as "lat",
+             l."longitude" as "lng",
              COALESCE(json_agg(p.*) FILTER (WHERE p."photoId" IS NOT NULL), '[]') AS photos
       FROM "Trips" t
       LEFT JOIN "Photos" p ON t."tripId" = p."tripId"
@@ -207,12 +208,12 @@ app.get('/api/trips/:tripId', authMiddleware, async (req, res, next) => {
     if (!Number.isInteger(+tripId)) {
       throw new ClientError(400, 'Invalid tripId');
     }
-
+    // added "lat"
     const sql = `
       SELECT t.*,
              l."name" AS location,
-             l."latitude",
-             l."longitude",
+             l."latitude" as "lat",
+             l."longitude" as "lng",
              COALESCE(json_agg(p.*) FILTER (WHERE p."photoId" IS NOT NULL), '[]') AS photos
       FROM "Trips" t
       LEFT JOIN "Photos" p ON t."tripId" = p."tripId"
@@ -240,8 +241,8 @@ app.put('/api/trips/:tripId', authMiddleware, async (req, res, next) => {
     const { title, description, startDate, endDate } = req.body;
     const sql = `
       update "Trips"
-      set "title" = $1, "description" = $2, "startDate" = $3, "endDate" = $4 "location" = $5
-      where "tripId" = $6 and "userId" = $7
+      set "title" = $1, "description" = $2, "startDate" = $3, "endDate" = $4
+      where "tripId" = $5 and "userId" = $6
       returning *;
     `;
     const params = [

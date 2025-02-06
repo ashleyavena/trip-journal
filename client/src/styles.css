@@ -124,6 +124,7 @@
   width: 120px;
   border: none;
   font-size: 1.3rem;
+  color: white;
   cursor: pointer; /* Add pointer cursor for better UX */
 }
 
@@ -215,5 +216,12 @@
   font-family: 'Ysabeau SC', serif;
   font-optical-sizing: auto;
   font-weight: 400;
+  font-style: normal;
+}
+
+.ysabeau-sc-300 {
+  font-family: 'Ysabeau SC', serif;
+  font-optical-sizing: auto;
+  font-weight: 500;
   font-style: normal;
 }

@@ -35,7 +35,7 @@ export function LoginForm() {
 
   return (
     <div className="flex items-center justify-center h-screen">
-      <div className="bg-transparent p-8 rounded-lg shadow-md w-full max-w-sm">
+      <div className="bg-white/30 p-8 rounded-lg shadow-md w-full max-w-sm backdrop-blur-md">
         <h2 className="text-xl font-bold text-center mb-4">Sign In</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <label className="block">

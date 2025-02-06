@@ -38,7 +38,7 @@ export function Carousel({ photos }: CarouselProps) {
         <img
           src={photos[currentIndex]}
           alt={`Slide ${currentIndex + 1}`}
-          style={{ width: 400, height: 400, objectFit: 'contain' }} // this style tag is deciding the size of the carousel images
+          style={{ width: 500, height: 500, objectFit: 'contain' }} // this style tag is deciding the size of the carousel images
           className="mx-auto" // Contain images in the container without stretching
         />
       </div>
@@ -46,27 +46,27 @@ export function Carousel({ photos }: CarouselProps) {
       {/* Prev Button */}
       <button
         onClick={prevSlide}
-        className="absolute top-1/2 left-0 transform -translate-y-1/2 text-white bg-black p-3 rounded-full hover:bg-gray-700 transition-all">
+        className="carousel-button absolute top-1/2 left-4 transform -translate-y-1/2">
         &#10094;
       </button>
 
-      {/* Next Button */}
       <button
         onClick={nextSlide}
-        className="absolute top-1/2 right-0 transform -translate-y-1/2 text-white bg-black p-3 rounded-full hover:bg-gray-700 transition-all">
+        className="carousel-button absolute top-1/2 right-4 transform -translate-y-1/2">
         &#10095;
       </button>
 
       {/* Dots */}
       {/* Dots - Positioned outside and at the bottom of the image */}
+      {/* Dots */}
       <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
         {photos.map((_, index) => (
           <button
             key={index}
             onClick={() => goToSlide(index)}
-            className={`w-4 h-4 rounded-full ${
-              currentIndex === index ? 'bg-blue' : 'bg-grey'
-            } dot-button transition-all`}
+            className={`dot-button    ${
+              currentIndex === index ? 'active' : 'inactive'
+            }`}
           />
         ))}
       </div>
