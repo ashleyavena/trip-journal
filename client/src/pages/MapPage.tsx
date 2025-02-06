@@ -6,10 +6,14 @@ import {
   Pin,
 } from '@vis.gl/react-google-maps';
 import { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom'; // Importing useLocation from react-router-dom
+
 import { usePins } from '../components/PinsContext';
 import { readAllTripLocations } from '../lib/data';
 
 export function MapPage() {
+  const location = useLocation();
+  const { location: locationName, lat, lng } = location.state || {};
   const { pins } = usePins();
   const [isLoaded, setIsLoaded] = useState(false);
   const [tripLocations, setTripLocations] = useState<
@@ -76,6 +80,9 @@ export function MapPage() {
   return isLoaded ? (
     <div id="map-container">
       <h3>Map Page</h3>
+      <p>Location: {locationName || 'No location provided'}</p>
+      <p>Latitude: {lat}</p>
+      <p>Longitude: {lng}</p>
       <APIProvider apiKey={apiKey}>
         <Map
           defaultZoom={13}

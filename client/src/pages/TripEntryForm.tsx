@@ -140,17 +140,17 @@ export function TripEntryForm() {
     );
   }
   return (
-    <div className="min-h-screen flex items-center justify-center  bg-cover bg-center bg-no-repeat bg-[url('../public/mobileLogin.jpg')] md:bg-[url('../public/desktopHome.jpg')]">
-      <div className="container w-full max-w-2xl p-4  bg-opacity-75 rounded-md shadow-lg">
+    <div className="min-h-screen flex items-center justify-center  bg-cover bg-center bg-no-repeat bg-[url('../public/collage.jpg')] md:bg-[url('../public/collage.jpg')]">
+      <div className="container bg-white/50 w-full max-w-2xl p-4  bg-opacity-75 rounded-md shadow-lg">
         <div className="row mb-4">
-          <div className="column-full text-center">
+          <div className="column-full text-center delius-unicase-regular ">
             <h1>{isEditing ? 'Edit Entry' : 'New Entry'}</h1>
           </div>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-4">
-            <label className="d-block">
+            <label className="d-block font-bold">
               Title
               <input
                 name="title"
@@ -161,7 +161,7 @@ export function TripEntryForm() {
               />
             </label>
 
-            <label className="d-block">
+            <label className="d-block font-bold">
               Start Date
               <input
                 name="startDate"
@@ -172,7 +172,7 @@ export function TripEntryForm() {
               />
             </label>
 
-            <label className="d-block">
+            <label className="d-block font-bold">
               End Date
               <input
                 name="endDate"
@@ -184,7 +184,7 @@ export function TripEntryForm() {
             </label>
 
             <div>
-              <label className="d-block">
+              <label className="d-block font-bold">
                 Location
                 <Autocomplete
                   onPlaceChanged={handlePlaceChanged}
@@ -203,7 +203,7 @@ export function TripEntryForm() {
           </div>
 
           <div>
-            <label className="d-block">
+            <label className="d-block font-bold">
               Description
               <textarea
                 name="description"
@@ -226,9 +226,7 @@ export function TripEntryForm() {
                 Delete Entry
               </button>
             )}
-            <button className="input-b-radius text-padding purple-background white-text">
-              SAVE
-            </button>
+            <button className="text-padding text-white ">SAVE</button>
           </div>
         </form>
 

@@ -16,24 +16,24 @@ export function NavBar() {
             <div className="flex items-center justify-between py-4">
               <a href="/trips">
                 <h1 className="font-serif text-white text-lg font-bold">
-                  Trip Journal
+                  Travelogue
                 </h1>
               </a>
               {/* Navigation Links (hidden on mobile) */}
               <nav className="hidden md:flex items-center space-x-6">
                 <Link
                   to="/details/new"
-                  className="entries-link text-white hover:underline text-lg">
+                  className="entries-link text-white hover:underline text-lg ysabeau-sc-200">
                   New Entry
                 </Link>
                 <Link
                   to="/map"
-                  className="entries-link text-white hover:underline">
+                  className="entries-link text-white hover:underline ysabeau-sc-200">
                   Map
                 </Link>
                 <Link
                   to="/trips"
-                  className="entries-link text-white hover:underline">
+                  className="entries-link text-white hover:underline ysabeau-sc-200">
                   Entries
                 </Link>
                 <LogOut />
@@ -45,15 +45,21 @@ export function NavBar() {
 
       {/* Bottom Navbar ( mobile) */}
       {!shouldHideNavbar && (
-        <div className="fixed bottom-0 w-full bg-white bg-opacity-5 z-50 shadow-md md:hidden backdrop-blur-md">
+        <div className="fixed bottom-0 w-full  bg-opacity-5 z-50 shadow-md md:hidden backdrop-blur-md">
           <div className="container mx-auto flex justify-around py-3">
-            <Link to="/trips" className="text-white text-2xl">
+            <Link
+              to="/trips"
+              className="text-white text-2xl shadow-sm rounded-full shadow-black">
               <FaHome />
             </Link>
-            <Link to="/details/new" className="text-white text-2xl">
+            <Link
+              to="/details/new"
+              className="text-white text-2xl shadow-sm rounded-full shadow-black ">
               <FaPlus />
             </Link>
-            <Link to="/map" className="text-white text-2xl">
+            <Link
+              to="/map"
+              className="text-white text-2xl shadow-sm rounded-full  shadow-black">
               <FaGlobe />
             </Link>
           </div>

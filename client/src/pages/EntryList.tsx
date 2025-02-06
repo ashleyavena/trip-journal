@@ -42,7 +42,7 @@ export function EntryList() {
             <h3>
               <Link
                 to="/details/new"
-                className="dancing-script-400 white-text form-link">
+                className="dancing-script-400 white-text form-link hidden md:inline-block">
                 record a new trip
               </Link>
             </h3>

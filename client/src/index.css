@@ -29,6 +29,13 @@ button {
   transition: border-color 0.25s;
 }
 
+.dot-button {
+  border: none;
+  padding: 0;
+  background-color: pink;
+  cursor: pointer; /* Ensure the button behaves as clickable */
+}
+
 button:hover {
   border-color: #646cff;
 }

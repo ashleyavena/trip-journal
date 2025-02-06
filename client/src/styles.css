@@ -1,6 +1,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Dancing+Script&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Cedarville+Cursive&family=Rubik+Wet+Paint&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Cedarville+Cursive&family=Dancing+Script:wght@400..700&family=Delius+Unicase:wght@400;700&family=Playwrite+HR:wght@100..400&family=Playwrite+VN:wght@100..400&family=Rubik+Wet+Paint&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Cedarville+Cursive&family=Dancing+Script:wght@400..700&family=Delius+Unicase:wght@400;700&family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&family=Playwrite+HR:wght@100..400&family=Playwrite+VN:wght@100..400&family=Rubik+Wet+Paint&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Cedarville+Cursive&family=Dancing+Script:wght@400..700&family=Delius+Unicase:wght@400;700&family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&family=Playwrite+HR:wght@100..400&family=Playwrite+VN:wght@100..400&family=Rubik+Wet+Paint&family=Ysabeau+SC:wght@1..1000&display=swap');
 
 .header {
   background-color: #562b81;
@@ -32,7 +34,7 @@
 }
 
 .input-b-color {
-  border: 1px solid #b6b6b6;
+  border: 1px solid #040303;
 }
 
 .entry-ul {
@@ -189,5 +191,29 @@
   font-optical-sizing: auto;
   font-size: 2.5rem;
   font-weight: 200;
+  font-style: normal;
+}
+
+.merriweather-regular {
+  font-family: Merriweather, serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.text-shadow-dark {
+  text-shadow: 4px 4px 6px rgba(0, 0, 0, 0.6); /* Darker shadow with more spread */
+}
+
+.caveat-200 {
+  font-family: Caveat, serif;
+  font-optical-sizing: auto;
+  font-weight: 200;
+  font-style: normal;
+}
+
+.ysabeau-sc-200 {
+  font-family: 'Ysabeau SC', serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
   font-style: normal;
 }

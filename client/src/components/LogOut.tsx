@@ -11,7 +11,8 @@ export function LogOut() {
         <div className="relative flex-grow flex-1 px-4">
           <button
             className="log-out
-            py-2 px-4 border-2
+            ysabeau-sc-200
+            border-2
             border-white text-white
             bg-transparent rounded-full
              cursor-pointer transition-all
