@@ -62,7 +62,7 @@ export function TripDetailsPage() {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-fixed bg-cover bg-center bg-no-repeat bg-[url('../public/desktopHome.jpg')] p-6">
-      <div className="w-full max-w-3xl bg-white/80 p-6 rounded-md shadow-lg relative">
+      <div className=" postcard-border w-full max-w-3xl bg-white/80 p-6 rounded-md shadow-lg relative">
         <div className="absolute top-3 right-3 flex space-x-3">
           <Link
             to={`/details/${entry.tripId}`}
@@ -89,36 +89,45 @@ export function TripDetailsPage() {
         {!entry.photos ||
           (entry.photos.length === 0 && <p>No photos available</p>)}
 
-        <p className="flex items-center space-x-2">
-          <FaMapPin
-            onClick={handlePinClick}
-            className="text-xl text-blue-500 cursor-pointer"
-          />
+        <div className="postcard-section mt-6 p-4 bg-white rounded-md shadow-md relative">
+          <div className="postcard-lines">
+            <p className="flex items-center space-x-2">
+              <FaMapPin
+                onClick={handlePinClick}
+                className="text-xl text-blue-500 cursor-pointer"
+              />
+              <strong className="playwrite-hr-400 text-lg mr-4">
+                Location
+              </strong>
+              <span>{entry?.location || 'Location not available'}</span>
+            </p>
 
-          <strong>Location:</strong>
-          <span>{entry?.location || 'Location not available'}</span>
-        </p>
+            <p>
+              <strong className="caveat-200 text-xl mr-4">Start Date</strong>{' '}
+              {new Date(entry.startDate).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+              })}
+            </p>
 
-        <p>
-          <strong>Start Date:</strong>{' '}
-          {new Date(entry.startDate).toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-          })}
-        </p>
-        <p>
-          <strong>End Date:</strong>{' '}
-          {new Date(entry.endDate).toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-          })}
-        </p>
-        <p>
-          <strong>Description:</strong>{' '}
-          {entry?.description || 'Description not available'}
-        </p>
+            <p>
+              <strong className="caveat-200 text-xl mr-4">End Date</strong>{' '}
+              {new Date(entry.endDate).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+              })}
+            </p>
+
+            <p>
+              <strong className="delius-unicase-bold mr-2">
+                Impressions & Insights...
+              </strong>{' '}
+              {entry?.description || 'Description not available'}
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   );

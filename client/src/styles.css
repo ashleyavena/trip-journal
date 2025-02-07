@@ -9,7 +9,8 @@
 }
 
 .form-image {
-  max-height: 12rem;
+  max-width: 100%;
+  max-height: auto;
   margin-bottom: 1rem;
   aspect-ratio: auto;
   margin-left: auto;
@@ -72,8 +73,8 @@
   text-decoration: none;
   outline: none;
   background-color: #61a4e6;
-  padding: 0.5rem 1rem;
-  border-radius: 5px;
+  padding: 0.75rem 1rem;
+  border-radius: 15px;
   color: white;
 }
 
@@ -129,8 +130,8 @@
 }
 
 .entry-card img {
-  width: 200px;
-  height: 200px;
+  width: 300px;
+  height: 300px;
   object-fit: contain;
   transition: transform 0.3s ease-in-out;
 }
@@ -147,6 +148,59 @@
   background-repeat: no-repeat;
 }
 
+.postcard-section {
+  background-color: #f4f1e1; /* Light brown color for aged paper */
+  background-image: url('https://www.transparenttextures.com/patterns/old-wall-3.png'); /* Paper texture */
+  background-size: cover; /* Ensures the background texture covers the element */
+  background-position: center center;
+  padding: 2rem; /* Padding inside the card */
+  border-radius: 8px;
+  box-shadow: 4px 4px 15px rgba(0, 0, 0, 0.2); /* Shadow to give depth */
+  position: relative;
+  overflow: hidden;
+}
+
+.postcard-border {
+  position: relative;
+  background-color: rgba(255, 255, 255, 0.8);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-width: 10px;
+  border-style: solid;
+  border-image: repeating-linear-gradient(
+      45deg,
+      #ff4c4c,
+      #ff4c4c 10px,
+      #3f8cff 10px,
+      #3f8cff 20px,
+      #fff 20px,
+      #fff 30px
+    )
+    1;
+  background-clip: padding-box;
+}
+
+.postcard-container h1,
+.postcard-container p {
+  text-align: center; /* Centering the text */
+}
+
+.postcard-lines p {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.2); /* Horizontal lines */
+  padding-bottom: 8px;
+  margin-bottom: 12px;
+}
+
+.postcard-lines p:last-child {
+  border-bottom: none; /* Remove line for last item */
+}
+
+.postcard-section strong {
+  font-size: 1.2rem;
+  color: #333;
+}
+
 @font-face {
   font-family: Oswald;
   font-style: normal;
@@ -159,6 +213,13 @@
   font-family: 'Cedarville Cursive', serif;
   font-weight: 400;
   font-style: normal;
+}
+
+.cedarville-cursive-regular-4 {
+  font-family: 'Cedarville Cursive', serif;
+  font-weight: 400;
+  font-style: normal;
+  font-size: 4rem;
 }
 
 .dancing-script-400 {
@@ -210,6 +271,14 @@
   font-optical-sizing: auto;
   font-weight: 200;
   font-style: normal;
+}
+
+.caveat-400 {
+  font-family: Caveat, serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+  font-size: 4.5rem;
 }
 
 .ysabeau-sc-200 {
