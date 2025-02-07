@@ -6,8 +6,10 @@ import {
   Pin,
 } from '@vis.gl/react-google-maps';
 import { useEffect, useState } from 'react';
+import { GoogleMap } from '@react-google-maps/api';
 import { usePins } from '../components/PinsContext';
 import { readAllTripLocations } from '../lib/data';
+import { useLocation } from 'react-router-dom';
 
 export function MapPage() {
   const { pins } = usePins();
@@ -15,6 +17,8 @@ export function MapPage() {
   const [tripLocations, setTripLocations] = useState<
     { lat: number; lng: number; name: string }[]
   >([]);
+  const location = useLocation();
+  const { lat, lng } = location.state?.pinLocation || {}; // Get lat and lng from the state
 
   useEffect(() => {
     const fetchLocations = async () => {
@@ -40,28 +44,25 @@ export function MapPage() {
     name: string;
   };
 
-  function handleMarkerClick(
-    e: google.maps.marker.AdvancedMarkerClickEvent
-  ): void {
-    console.log('e', e.target);
-  }
-
-  // Default locations
-  // const defaultLocations: Poi[] = [
-  //   { name: 'Sydney Opera House', lat: -33.8567844, lng: 151.213108 },
-  //   { name: 'Harbour Bridge', lat: -33.852228, lng: 151.2038374 },
-  // ];
+  // TODO: For Stretch Feature
+  // const handleClick = (e: google.maps.marker.AdvancedMarkerClickEvent) => {
+  //   const marker = e.target as unknown as google.maps.Marker;
+  //   console.log('Marker clicked:', marker);
+  // };
 
   const allPins = [...tripLocations, ...pins];
   console.log('all pins:', allPins);
 
   // PoiMarkers component for displaying markers
+  //  ({ pois }: { pois: Poi[] }) is a destructuring assignment in TypeScript, commonly used in function arguments
+  // you could use a type alias instead
+
   const PoiMarkers = ({ pois }: { pois: Poi[] }) => (
     <>
       {pois.map((poi, index) => (
         <AdvancedMarker
           key={index}
-          onClick={handleMarkerClick}
+          // onClick={handleClick} TODO:
           position={{ lat: poi.lat, lng: poi.lng }}>
           <Pin
             background={'#FBBC04'}
@@ -74,22 +75,24 @@ export function MapPage() {
   );
 
   return isLoaded ? (
-    <div id="map-container">
-      <h3>Map Page</h3>
-      <APIProvider apiKey={apiKey}>
-        <Map
-          defaultZoom={13}
-          defaultCenter={
-            pins.length ? pins[0] : { lat: -33.8567844, lng: 151.213108 }
-          } // Default to Los Angeles
-          mapId={mapID}
-          onCameraChanged={(ev: MapCameraChangedEvent) =>
-            console.log('Camera changed:', ev.detail.center)
-          }>
-          <PoiMarkers pois={allPins} />
-        </Map>
-      </APIProvider>
-    </div>
+    <GoogleMap>
+      <div id="map-container">
+        <APIProvider apiKey={apiKey}>
+          <Map
+            defaultZoom={lat ? 13 : 5}
+            center={lat ? { lat, lng } : undefined}
+            defaultCenter={
+              pins.length ? pins[0] : { lat: 34.8567844, lng: -118.213108 }
+            } // Default to Los Angeles
+            mapId={mapID}
+            onCameraChanged={(ev: MapCameraChangedEvent) =>
+              console.log('Camera changed:', ev.detail.center)
+            }>
+            <PoiMarkers pois={allPins} />
+          </Map>
+        </APIProvider>
+      </div>
+    </GoogleMap>
   ) : (
     <div>Loading Map...</div>
   );

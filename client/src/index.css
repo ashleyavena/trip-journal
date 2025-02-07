@@ -2,11 +2,11 @@
 @import 'tailwindcss';
 /* stylelint-enable */
 
-a {
+/* a {
   font-weight: 500;
   color: #646cff;
   text-decoration: inherit;
-}
+} */
 
 a:hover {
   color: #535bf2;
@@ -27,6 +27,44 @@ button {
   background-color: #1a1a1a;
   cursor: pointer;
   transition: border-color 0.25s;
+}
+
+.carousel-button {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background-color: rgba(88, 100, 194, 0.307); /* Semi-transparent black */
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  transition: background 0.3s ease;
+}
+
+.carousel-button:hover {
+  background-color: #333;
+}
+
+.dot-button {
+  border: none;
+  padding: 0;
+  background-color: pink; /* Default color for inactive dots */
+  cursor: pointer; /* Ensure the button behaves as clickable */
+  transition: background-color 0.3s ease, transform 0.3s ease; /* Smooth transition for color and scale */
+  width: 20px; /* Adjust size */
+  height: 20px; /* Adjust size */
+  border-radius: 50%;
+}
+
+.dot-button.active {
+  background-color: rgba(0, 0, 255, 0.502); /* Filled color for active dot */
+  transform: scale(1.2); /* Slightly enlarge the active dot */
+}
+
+.dot-button.inactive {
+  background-color: transparent; /* Empty color for inactive dots */
+  border: 1px solid white; /* Border color for inactive dots */
 }
 
 button:hover {
@@ -53,8 +91,9 @@ button:focus-visible {
   }
 }
 
+/*
 .get-started-bg {
-  background-image: url('../public/mountain.jpg'); /* Ensure the path is correct */
+  background-image: url('../public/mountain.jpg');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -63,11 +102,11 @@ button:focus-visible {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-between; /* Space out the content */
+  justify-content: space-between;
   padding: 24px;
-}
+} */
 
-.sign-in-button {
+/* .sign-in-button {
   padding: 12px 24px;
   font-size: 1rem;
   background: #2563eb;
@@ -86,4 +125,4 @@ button:focus-visible {
   text-decoration: none;
   border-radius: 6px;
   width: 200px;
-}
+} */

@@ -14,7 +14,6 @@ export const usePins = () => {
   return context;
 };
 
-// Provider component to wrap the app and share pins state
 export const PinsProvider = ({ children }: { children: React.ReactNode }) => {
   const [pins, setPins] = useState<
     { lat: number; lng: number; name: string }[]
@@ -30,5 +29,3 @@ export const PinsProvider = ({ children }: { children: React.ReactNode }) => {
     </PinsContext.Provider>
   );
 };
-
-// add a use Effect and add an endpoint that reads all trips and return it to  MapPage

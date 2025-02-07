@@ -11,11 +11,8 @@ import {
 import { Autocomplete } from '@react-google-maps/api';
 import { usePins } from '../components/PinsContext';
 
-// type onAddLocationProps = {
-//   onAddLocation: (location: string, lat: number, lng: number) => void;
-// };
-
 export function TripEntryForm() {
+  const { addPin } = usePins();
   const { tripId } = useParams();
   const [entry, setEntry] = useState<Entry>();
   const [isLoading, setIsLoading] = useState(false);
@@ -31,8 +28,6 @@ export function TripEntryForm() {
   const isEditing = tripId && tripId !== 'new';
   const [autocomplete, setAutocomplete] =
     useState<google.maps.places.Autocomplete | null>(null);
-
-  const { addPin } = usePins();
 
   useEffect(() => {
     async function load(id: number) {
@@ -56,7 +51,7 @@ export function TripEntryForm() {
       if (tripId && isEditing) {
         const entryData = await readTrip(+tripId);
         setEntry(entryData);
-        setLocation(entryData?.location || ''); // sets location input field
+        setLocation(entryData?.location || '');
         setCoordinates({
           lat: entryData?.lat || 0,
           lng: entryData?.lng || 0,
@@ -84,10 +79,9 @@ export function TripEntryForm() {
 
     const lat = place.geometry.location.lat();
     const lng = place.geometry.location.lng();
-    setLocation(place.formatted_address || '');
+    setLocation(place.formatted_address || ''); // setting the state with the data from Place
     setCoordinates({ lat, lng });
 
-    // Call onAddLocation when location is selected
     addPin(place.formatted_address || '', lat, lng);
   };
 
@@ -105,7 +99,7 @@ export function TripEntryForm() {
       const newEntry = Object.fromEntries(formData) as unknown as Entry;
       newEntry.description = description;
       newEntry.location = location; // Use the selected location name
-      newEntry.lat = coordinates?.lat ?? 0; // Default to 0 if undefined
+      newEntry.lat = coordinates?.lat ?? 0;
       newEntry.lng = coordinates?.lng ?? 0;
 
       if (isEditing) {
@@ -139,50 +133,52 @@ export function TripEntryForm() {
       </div>
     );
   }
-
   return (
-    <div className="container">
-      <div className="row">
-        <div className="column-full d-flex justify-between">
-          <h1>{isEditing ? 'Edit Entry' : 'New Entry'}</h1>
+    <div className="min-h-screen flex items-center justify-center  bg-cover bg-center bg-no-repeat bg-[url('../public/collage.jpg')] md:bg-[url('../public/collage.jpg')]">
+      <div className="container bg-white/50 w-full max-w-2xl p-4  bg-opacity-75 rounded-md shadow-lg">
+        <div className="row mb-4">
+          <div className="column-full text-center delius-unicase-regular ">
+            <h1>{isEditing ? 'Edit Entry' : 'New Entry'}</h1>
+          </div>
         </div>
-      </div>
 
-      <form onSubmit={handleSubmit}>
-        <div className="row margin-bottom-1">
-          <div className="column-half">
-            <label className="margin-bottom-1 d-block">
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="space-y-4">
+            <label className="d-block font-bold">
               Title
               <input
                 name="title"
                 defaultValue={entry?.title ?? ''}
                 required
-                className="input-b-color text-padding input-b-radius purple-outline input-height margin-bottom-2 d-block width-100"
+                className="input-b-color text-padding input-b-radius purple-outline input-height d-block w-full"
                 type="text"
               />
             </label>
-            <label className="margin-bottom-1 d-block">
+
+            <label className="d-block font-bold">
               Start Date
               <input
                 name="startDate"
                 type="date"
                 defaultValue={entry?.startDate ?? ''}
                 required
-                className="input-b-color text-padding input-b-radius purple-outline input-height margin-bottom-2 d-block width-100"
+                className="input-b-color text-padding input-b-radius purple-outline input-height d-block w-full"
               />
             </label>
-            <label className="margin-bottom-1 d-block">
+
+            <label className="d-block font-bold">
               End Date
               <input
                 name="endDate"
                 type="date"
                 defaultValue={entry?.endDate ?? ''}
                 required
-                className="input-b-color text-padding input-b-radius purple-outline input-height margin-bottom-2 d-block width-100"
+                className="input-b-color text-padding input-b-radius purple-outline input-height d-block w-full"
               />
             </label>
+
             <div>
-              <label className="margin-bottom-1 d-block">
+              <label className="d-block font-bold">
                 Location
                 <Autocomplete
                   onPlaceChanged={handlePlaceChanged}
@@ -193,32 +189,29 @@ export function TripEntryForm() {
                     onChange={(e) => setLocation(e.target.value)}
                     required
                     placeholder="Enter a location"
+                    className="input-b-color text-padding input-b-radius purple-outline w-full"
                   />
                 </Autocomplete>
               </label>
             </div>
           </div>
-        </div>
 
-        <div className="row margin-bottom-1">
-          <div className="column-full">
-            <label className="margin-bottom-1 d-block">
+          <div>
+            <label className="d-block font-bold">
               Description
               <textarea
                 name="description"
-                value={description} // Bind this to the state
-                onChange={(e) => setDescription(e.target.value)} // Update the state on change
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
                 required
-                className="input-b-color text-padding input-b-radius purple-outline d-block width-100"
+                className="input-b-color text-padding input-b-radius purple-outline w-full"
                 cols={30}
                 rows={10}
               />
             </label>
           </div>
-        </div>
 
-        <div className="row">
-          <div className="column-full d-flex justify-between">
+          <div className="flex justify-between">
             {isEditing && (
               <button
                 className="delete-entry-button"
@@ -227,35 +220,32 @@ export function TripEntryForm() {
                 Delete Entry
               </button>
             )}
-            <button className="input-b-radius text-padding purple-background white-text">
-              SAVE
-            </button>
+            <button className="text-padding text-white ">SAVE</button>
           </div>
-        </div>
-      </form>
-      {isDeleting && (
-        <div
-          id="modalContainer"
-          className="modal-container d-flex justify-center align-center">
-          <div className="modal row">
-            <div className="column-full d-flex justify-center">
-              <p>Are you sure you want to delete this entry?</p>
-            </div>
-            <div className="column-full d-flex justify-between">
-              <button
-                className="modal-button"
-                onClick={() => setIsDeleting(false)}>
-                Cancel
-              </button>
-              <button
-                className="modal-button red-background white-text"
-                onClick={handleDelete}>
-                Confirm
-              </button>
+        </form>
+
+        {isDeleting && (
+          <div
+            id="modalContainer"
+            className="modal-container flex justify-center items-center">
+            <div className="modal p-4 w-96 bg-white rounded-md shadow-lg">
+              <div className="column-full text-center mb-4">
+                <p>Are you sure you want to delete this entry?</p>
+              </div>
+              <div className="column-full flex justify-between">
+                <button
+                  className="modal-button-cancel"
+                  onClick={() => setIsDeleting(false)}>
+                  Cancel
+                </button>
+                <button className="modal-button-confirm" onClick={handleDelete}>
+                  Confirm
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }
