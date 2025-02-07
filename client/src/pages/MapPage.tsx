@@ -6,7 +6,6 @@ import {
   Pin,
 } from '@vis.gl/react-google-maps';
 import { useEffect, useState } from 'react';
-
 import { GoogleMap } from '@react-google-maps/api';
 import { usePins } from '../components/PinsContext';
 import { readAllTripLocations } from '../lib/data';
@@ -45,6 +44,7 @@ export function MapPage() {
     name: string;
   };
 
+  // TODO: For Stretch Feature
   // const handleClick = (e: google.maps.marker.AdvancedMarkerClickEvent) => {
   //   const marker = e.target as unknown as google.maps.Marker;
   //   console.log('Marker clicked:', marker);
@@ -54,12 +54,15 @@ export function MapPage() {
   console.log('all pins:', allPins);
 
   // PoiMarkers component for displaying markers
+  //  ({ pois }: { pois: Poi[] }) is a destructuring assignment in TypeScript, commonly used in function arguments
+  // you could use a type alias instead
+
   const PoiMarkers = ({ pois }: { pois: Poi[] }) => (
     <>
       {pois.map((poi, index) => (
         <AdvancedMarker
           key={index}
-          // onClick={handleClick}
+          // onClick={handleClick} TODO:
           position={{ lat: poi.lat, lng: poi.lng }}>
           <Pin
             background={'#FBBC04'}
@@ -80,7 +83,7 @@ export function MapPage() {
             center={lat ? { lat, lng } : undefined}
             defaultCenter={
               pins.length ? pins[0] : { lat: 34.8567844, lng: -118.213108 }
-            } // Default to Sydney
+            } // Default to Los Angeles
             mapId={mapID}
             onCameraChanged={(ev: MapCameraChangedEvent) =>
               console.log('Camera changed:', ev.detail.center)

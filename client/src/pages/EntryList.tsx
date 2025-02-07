@@ -36,7 +36,7 @@ export function EntryList() {
       <div className="container ">
         <div className="flex flex-col  items-center text-center mb-20">
           <h1 className="caveat-400 text-white mb-10 mt-[-90px]">
-            Relieve and Wander Through Your Journeys
+            Relive and Wander Through Your Journeys
           </h1>
           <h3>
             <Link

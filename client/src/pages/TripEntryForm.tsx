@@ -11,11 +11,8 @@ import {
 import { Autocomplete } from '@react-google-maps/api';
 import { usePins } from '../components/PinsContext';
 
-// type onAddLocationProps = {
-//   onAddLocation: (location: string, lat: number, lng: number) => void;
-// };
-
 export function TripEntryForm() {
+  const { addPin } = usePins();
   const { tripId } = useParams();
   const [entry, setEntry] = useState<Entry>();
   const [isLoading, setIsLoading] = useState(false);
@@ -31,8 +28,6 @@ export function TripEntryForm() {
   const isEditing = tripId && tripId !== 'new';
   const [autocomplete, setAutocomplete] =
     useState<google.maps.places.Autocomplete | null>(null);
-
-  const { addPin } = usePins();
 
   useEffect(() => {
     async function load(id: number) {
@@ -56,7 +51,7 @@ export function TripEntryForm() {
       if (tripId && isEditing) {
         const entryData = await readTrip(+tripId);
         setEntry(entryData);
-        setLocation(entryData?.location || ''); // sets location input field
+        setLocation(entryData?.location || '');
         setCoordinates({
           lat: entryData?.lat || 0,
           lng: entryData?.lng || 0,
@@ -84,10 +79,9 @@ export function TripEntryForm() {
 
     const lat = place.geometry.location.lat();
     const lng = place.geometry.location.lng();
-    setLocation(place.formatted_address || '');
+    setLocation(place.formatted_address || ''); // setting the state with the data from Place
     setCoordinates({ lat, lng });
 
-    // Call onAddLocation when location is selected
     addPin(place.formatted_address || '', lat, lng);
   };
 
@@ -105,7 +99,7 @@ export function TripEntryForm() {
       const newEntry = Object.fromEntries(formData) as unknown as Entry;
       newEntry.description = description;
       newEntry.location = location; // Use the selected location name
-      newEntry.lat = coordinates?.lat ?? 0; // Default to 0 if undefined
+      newEntry.lat = coordinates?.lat ?? 0;
       newEntry.lng = coordinates?.lng ?? 0;
 
       if (isEditing) {
@@ -207,8 +201,8 @@ export function TripEntryForm() {
               Description
               <textarea
                 name="description"
-                value={description} // Bind this to the state
-                onChange={(e) => setDescription(e.target.value)} // Update the state on change
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
                 required
                 className="input-b-color text-padding input-b-radius purple-outline w-full"
                 cols={30}
