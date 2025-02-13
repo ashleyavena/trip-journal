@@ -21,7 +21,7 @@ export function RegistrationForm() {
       if (!response.ok) {
         throw new Error(`fetch error ${response.status}`);
       }
-      const user = (await response.json()) as User; // need to import user from UserContext
+      const user = (await response.json()) as User; // import user from UserContext
       alert(
         `Successfully registered ${user.username} as userId ${user.userId}`
       );

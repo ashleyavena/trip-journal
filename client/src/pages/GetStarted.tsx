@@ -39,7 +39,7 @@ export function GetStarted() {
       }
       const { user, token } = await response.json();
       handleSignIn(user, token);
-      navigate('/trips', { replace: true }); // Navigate to /home after successful login
+      navigate('/trips', { replace: true });
     } catch (error) {
       alert(`Error signing in ${error}`);
     }

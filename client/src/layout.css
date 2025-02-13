@@ -2,10 +2,6 @@
   box-sizing: border-box;
 }
 
-/* .hidden {
-  display: none !important;
-} */
-
 .invisible {
   visibility: hidden;
 }
@@ -63,16 +59,8 @@
   padding: 1rem;
 }
 
-.purple-background {
-  background-color: #562b81;
-}
-
 .white-text {
   color: #fff;
-}
-
-.red-background {
-  background-color: #dc2626;
 }
 
 .light-gray {

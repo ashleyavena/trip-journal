@@ -1,15 +1,19 @@
 import { LogOut } from './LogOut';
 import { Link, Outlet, useLocation } from 'react-router-dom';
-import { FaHome, FaPlus, FaGlobe } from 'react-icons/fa'; // Importing React Icons
+import { FaHome, FaPlus, FaGlobe } from 'react-icons/fa';
+import { FaPowerOff } from 'react-icons/fa6';
+import { useNavigate } from 'react-router-dom';
+import { useUser } from './useUser';
 
 export function NavBar() {
   const location = useLocation();
   const hideNavbarRoutes = ['/', '/sign-in', '/sign-up'];
   const shouldHideNavbar = hideNavbarRoutes.includes(location.pathname);
+  const { handleSignOut } = useUser();
+  const navigate = useNavigate();
 
   return (
     <>
-      {/* Full navbar (hidden on mobile) */}
       {!shouldHideNavbar && (
         <header className="bg-black fixed top-0 w-full z-50 shadow-md">
           <div className="container mx-auto px-6">
@@ -19,7 +23,14 @@ export function NavBar() {
                   Travelogue
                 </h1>
               </a>
-              {/* Navigation Links (hidden on mobile) */}
+              <div
+                className="block md:hidden text-white text-xl cursor-pointer"
+                onClick={() => {
+                  handleSignOut();
+                  navigate('/');
+                }}>
+                <FaPowerOff />
+              </div>
               <nav className="hidden md:flex items-center space-x-6">
                 <Link
                   to="/details/new"
@@ -66,7 +77,7 @@ export function NavBar() {
         </div>
       )}
 
-      {/* Prevent content from hiding behind navbar */}
+      {/* prevent content from hiding behind navbar */}
       <div className={shouldHideNavbar ? '' : 'pt-20'}>
         <Outlet />
       </div>

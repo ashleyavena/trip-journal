@@ -18,7 +18,7 @@ export function MapPage() {
     { lat: number; lng: number; name: string }[]
   >([]);
   const location = useLocation();
-  const { lat, lng } = location.state?.pinLocation || {}; // Get lat and lng from the state
+  const { lat, lng } = location.state?.pinLocation || {}; // get lat and lng from the state
 
   useEffect(() => {
     const fetchLocations = async () => {
@@ -44,26 +44,14 @@ export function MapPage() {
     name: string;
   };
 
-  // TODO: For Stretch Feature
-  // const handleClick = (e: google.maps.marker.AdvancedMarkerClickEvent) => {
-  //   const marker = e.target as unknown as google.maps.Marker;
-  //   console.log('Marker clicked:', marker);
-  // };
-
   const allPins = [...tripLocations, ...pins];
   console.log('all pins:', allPins);
 
-  // PoiMarkers component for displaying markers
-  //  ({ pois }: { pois: Poi[] }) is a destructuring assignment in TypeScript, commonly used in function arguments
-  // you could use a type alias instead
-
+  // PoiMarkers, "point of interest", Google Maps API component for displaying markers
   const PoiMarkers = ({ pois }: { pois: Poi[] }) => (
     <>
       {pois.map((poi, index) => (
-        <AdvancedMarker
-          key={index}
-          // onClick={handleClick} TODO:
-          position={{ lat: poi.lat, lng: poi.lng }}>
+        <AdvancedMarker key={index} position={{ lat: poi.lat, lng: poi.lng }}>
           <Pin
             background={'#FBBC04'}
             glyphColor={'#000'}
@@ -97,5 +85,3 @@ export function MapPage() {
     <div>Loading Map...</div>
   );
 }
-
-// add a use Effect and add an endpoint that reads all trips and return it to in MapPage

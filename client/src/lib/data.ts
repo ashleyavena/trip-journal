@@ -1,5 +1,3 @@
-// data
-
 import { User } from '../components/UserContext';
 
 export type Photo = {
@@ -51,7 +49,6 @@ type Auth = {
 export function saveAuth(user: User, token: string): void {
   const auth: Auth = { user, token };
   localStorage.setItem(authKey, JSON.stringify(auth));
-  console.log(user, token, "what's up");
 }
 
 export function removeAuth(): void {
@@ -65,7 +62,6 @@ export function readUser(): User | undefined {
 }
 
 export function readToken(): string | undefined {
-  console.log('token from storage', localStorage.getItem(authKey));
   const auth = localStorage.getItem(authKey);
   if (!auth) return undefined;
   return (JSON.parse(auth) as Auth).token;
@@ -87,9 +83,7 @@ export async function readTrips(): Promise<Entry[]> {
     });
     throw new Error(`Failed to fetch trips. Status: ${res.status}`);
   }
-
   const trips = await res.json();
-  console.log('Fetched Trips:', trips); // Check the data
   return trips as Entry[];
 }
 
@@ -100,7 +94,6 @@ export async function readTrip(tripId: number): Promise<Entry | undefined> {
       Authorization: `Bearer ${readToken()}`,
     },
   });
-  console.log('Response from /api/trips:', response);
   if (!response.ok) {
     throw new Error(`Failed to fetch trip. Status: ${response.status}`);
   }
@@ -109,7 +102,6 @@ export async function readTrip(tripId: number): Promise<Entry | undefined> {
 }
 
 // This function will fetch all the locations of trips for the user
-//
 export async function readAllTripLocations(): Promise<
   { lat: number; lng: number; name: string }[]
 > {
@@ -129,13 +121,10 @@ export async function readAllTripLocations(): Promise<
     });
     throw new Error(`Failed to fetch trip locations. Status: ${res.status}`);
   }
-
   const locations = await res.json();
-  console.log('Fetched trip locations:', locations);
   return locations; // Returns an array of locations { lat, lng, name }
 }
 
-// addTrip
 export async function addTrip(newEntry: Entry) {
   const userId = readUser()?.userId;
   if (!userId) {
@@ -163,8 +152,6 @@ export async function addTrip(newEntry: Entry) {
     description,
     location,
   };
-
-  console.log('Sending trip data:', entryData);
 
   const response = await fetch('/api/trips', {
     method: 'POST',

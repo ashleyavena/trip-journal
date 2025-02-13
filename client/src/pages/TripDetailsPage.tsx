@@ -21,9 +21,7 @@ export function TripDetailsPage() {
       setIsLoading(true);
       try {
         const trip = await readTrip(Number(tripId));
-        console.log('Trip data received:', trip);
         if (trip) {
-          console.log('2 received:', trip);
           setEntry(trip);
         } else {
           setEntry(null);
@@ -49,14 +47,13 @@ export function TripDetailsPage() {
   if (!entry) return <div>No trip found</div>;
 
   const pinLocation = {
-    lat: entry?.lat || 40.7128, //New York
+    lat: entry?.lat || 40.7128,
     lng: entry?.lng || -74.006,
   };
 
   const handlePinClick = () => {
     if (pinLocation.lat && pinLocation.lng) {
       navigate('/map', { state: { pinLocation } });
-      console.log('map was gone to:', entry);
     }
   };
 

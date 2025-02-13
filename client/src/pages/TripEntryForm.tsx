@@ -69,7 +69,6 @@ export function TripEntryForm() {
     if (!autocomplete) return;
 
     const place = autocomplete.getPlace();
-    console.log('Selected place:', place);
 
     if (!place || !place.geometry || !place.geometry.location) {
       console.error('No geometry available for selected place:', place);

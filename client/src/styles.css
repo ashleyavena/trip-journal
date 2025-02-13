@@ -1,9 +1,3 @@
-/* @import url('https://fonts.googleapis.com/css2?family=Dancing+Script&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Cedarville+Cursive&family=Rubik+Wet+Paint&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Cedarville+Cursive&family=Dancing+Script:wght@400..700&family=Delius+Unicase:wght@400;700&family=Playwrite+HR:wght@100..400&family=Playwrite+VN:wght@100..400&family=Rubik+Wet+Paint&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Cedarville+Cursive&family=Dancing+Script:wght@400..700&family=Delius+Unicase:wght@400;700&family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&family=Playwrite+HR:wght@100..400&family=Playwrite+VN:wght@100..400&family=Rubik+Wet+Paint&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Cedarville+Cursive&family=Dancing+Script:wght@400..700&family=Delius+Unicase:wght@400;700&family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&family=Playwrite+HR:wght@100..400&family=Playwrite+VN:wght@100..400&family=Rubik+Wet+Paint&family=Ysabeau+SC:wght@1..1000&display=swap'); */
-
 @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Cedarville+Cursive&family=Dancing+Script:wght@400..700&family=Delius+Unicase:wght@400;700&family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&family=Playwrite+HR:wght@100..400&family=Playwrite+VN:wght@100..400&family=Rubik+Wet+Paint&family=Ysabeau+SC:wght@1..1000&display=swap');
 
 .header {
@@ -46,29 +40,28 @@
 }
 
 .entries-link {
-  text-decoration: none; /* Removes underline */
-  font-size: 1rem; /* Set a standard font size (default) */
-  outline: none; /* Removes focus outline */
-  padding: 0.5rem 1rem; /* Adds padding inside the link for clickable area */
-  background-color: transparent; /* Transparent background */
-  border: none; /* No border */
-  cursor: pointer; /* Changes the cursor on hover */
-  display: inline-flex; /* Use inline-flex for better alignment */
-  align-items: center; /* Vertically centers text and icons */
-  margin: 0; /* Removes any default margin */
-  color: white; /* Ensures the text color is white */
-  transition: all 0.3s ease; /* Adds smooth transition for hover effects */
+  text-decoration: none;
+  font-size: 1rem;
+  outline: none;
+  padding: 0.5rem 1rem;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  margin: 0;
+  color: white;
+  transition: all 0.3s ease;
 }
 
-/* Add hover effect for better interactivity */
 .entries-link:hover {
-  color: #fbbc04; /* Changes text color on hover */
-  text-decoration: underline; /* Underline effect on hover */
+  color: #fbbc04;
+  text-decoration: underline;
 }
 
 .log-out:hover {
-  color: #ce22b4; /* Change text color on hover */
-  text-decoration: underline; /* Underline effect on hover */
+  color: #ce22b4;
+  text-decoration: underline;
 }
 
 .form-link {
@@ -92,10 +85,10 @@
   right: 0;
   top: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+  background-color: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
-  align-items: center; /* Ensure modal is centered on screen */
+  align-items: center;
 }
 
 .modal {
@@ -106,8 +99,8 @@
   font-size: 1.3rem;
   display: flex;
   flex-direction: column;
-  justify-content: space-around; /* Adjust space between the text and buttons */
-  align-items: center; /* Center the content inside modal */
+  justify-content: space-around;
+  align-items: center;
   padding: 20px;
 }
 
@@ -117,7 +110,7 @@
   width: 120px;
   border: none;
   font-size: 1.3rem;
-  cursor: pointer; /* Add pointer cursor for better UX */
+  cursor: pointer;
   color: red;
 }
 
@@ -128,7 +121,7 @@
   border: none;
   font-size: 1.3rem;
   color: white;
-  cursor: pointer; /* Add pointer cursor for better UX */
+  cursor: pointer;
 }
 
 .entry-card img {
@@ -143,7 +136,7 @@
 }
 
 .entry-list-container {
-  padding-top: 1rem; /* Adjust this value to match the height of your navbar */
+  padding-top: 1rem;
   min-height: 100vh;
   background-size: cover;
   background-position: center;
@@ -151,13 +144,13 @@
 }
 
 .postcard-section {
-  background-color: #f4f1e1; /* Light brown color for aged paper */
-  background-image: url('https://www.transparenttextures.com/patterns/old-wall-3.png'); /* Paper texture */
-  background-size: cover; /* Ensures the background texture covers the element */
+  background-color: #f4f1e1;
+  background-image: url('https://www.transparenttextures.com/patterns/old-wall-3.png');
+  background-size: cover;
   background-position: center center;
-  padding: 2rem; /* Padding inside the card */
+  padding: 2rem;
   border-radius: 8px;
-  box-shadow: 4px 4px 15px rgba(0, 0, 0, 0.2); /* Shadow to give depth */
+  box-shadow: 4px 4px 15px rgba(0, 0, 0, 0.2);
   position: relative;
   overflow: hidden;
 }
@@ -185,17 +178,17 @@
 
 .postcard-container h1,
 .postcard-container p {
-  text-align: center; /* Centering the text */
+  text-align: center;
 }
 
 .postcard-lines p {
-  border-bottom: 1px solid rgba(0, 0, 0, 0.2); /* Horizontal lines */
+  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
   padding-bottom: 8px;
   margin-bottom: 12px;
 }
 
 .postcard-lines p:last-child {
-  border-bottom: none; /* Remove line for last item */
+  border-bottom: none;
 }
 
 .postcard-section strong {
@@ -265,7 +258,7 @@
 }
 
 .text-shadow-dark {
-  text-shadow: 4px 4px 6px rgba(0, 0, 0, 0.6); /* Darker shadow with more spread */
+  text-shadow: 4px 4px 6px rgba(0, 0, 0, 0.6);
 }
 
 .caveat-200 {

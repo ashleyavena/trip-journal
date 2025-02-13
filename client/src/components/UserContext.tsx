@@ -13,6 +13,7 @@ export type UserContextValues = {
   handleSignOut: () => void;
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const UserContext = createContext<UserContextValues>({
   user: undefined,
   token: undefined,

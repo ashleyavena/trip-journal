@@ -61,7 +61,7 @@ app.post('/api/auth/sign-up', async (req, res, next) => {
       throw new ClientError(400, 'username and password are required fields');
     }
 
-    const hashedPassword = await argon2.hash(password); // Correctly hash the password
+    const hashedPassword = await argon2.hash(password);
 
     const sql = `
       insert into "Users" ("username", "hashedPassword")
@@ -88,16 +88,12 @@ app.post('/api/auth/sign-in', async (req, res, next) => {
     from "Users"
     where "username" =$1;
     `;
-    console.log('Executing SQL query:', sql);
-    console.log('With parameters:', [username]);
-
     const result = await db.query<User>(sql, [username]);
     const user = result.rows[0];
     if (!user) {
       throw new ClientError(400, 'invalid login');
     }
     const { userId, hashedPassword } = user;
-    console.log('Hashed password from database:', hashedPassword); // Log the password hash
     const isPasswordValid = await argon2.verify(hashedPassword, password);
     if (!isPasswordValid) throw new ClientError(401, 'invalid login');
 
@@ -108,8 +104,6 @@ app.post('/api/auth/sign-in', async (req, res, next) => {
     next(error);
   }
 });
-
-// api to log out
 
 app.post('/api/auth/sign-out', (req, res, next) => {
   res.status(200).json({ message: 'logged out successfully' });
@@ -145,7 +139,6 @@ app.post('/api/trips', authMiddleware, async (req, res, next) => {
     ) {
       throw new ClientError(400, 'Invalid date format');
     }
-    console.log('RECEIVED DATA:', req.body);
 
     const tripSql = `
     insert into "Trips" ("userId", "title", "description", "startDate", "endDate")
@@ -163,13 +156,8 @@ app.post('/api/trips', authMiddleware, async (req, res, next) => {
     `;
     const locationParams = [tripId, location, lat.toString(), lng.toString()];
     const locationResult = await db.query(locationSql, locationParams);
-
-    console.log('Executing SQL:', locationSql);
-    console.log('With parameters:', locationParams);
-
     res.status(201).json({
       trip: tripResult.rows[0],
-
       location: locationResult.rows[0],
     });
   } catch (error) {
@@ -180,7 +168,7 @@ app.post('/api/trips', authMiddleware, async (req, res, next) => {
 // api to get multiple photos per trip
 app.get('/api/trips', authMiddleware, async (req, res, next) => {
   try {
-    // change to as"lat"
+    // change to as "lat" to match naming
     const sql = `
       SELECT t.*,
              l."name" AS location,
@@ -224,11 +212,8 @@ app.get('/api/trips/:tripId', authMiddleware, async (req, res, next) => {
 
     const params = [tripId, req.user?.userId];
     const result = await db.query(sql, params);
-    console.log('trip data from db', result.rows[0]);
-
     const trip = result.rows[0];
     if (!trip) throw new ClientError(404, 'Entry not found');
-
     res.json(trip);
   } catch (err) {
     next(err);
@@ -266,21 +251,21 @@ app.delete('/api/trips/:tripId', authMiddleware, async (req, res, next) => {
   try {
     const { tripId } = req.params;
 
-    // Delete associated locations first
+    // delete associated locations
     const deleteLocationsSql = `
       DELETE FROM "Locations"
       WHERE "tripId" = $1;
     `;
     await db.query(deleteLocationsSql, [tripId]);
 
-    // Delete associated photos next
+    // delete associated photos
     const deletePhotosSql = `
       DELETE FROM "Photos"
       WHERE "tripId" = $1;
     `;
     await db.query(deletePhotosSql, [tripId]);
 
-    // Now delete the trip
+    //  delete the trip
     const deleteTripSql = `
       DELETE FROM "Trips"
       WHERE "tripId" = $1 AND "userId" = $2
@@ -303,13 +288,9 @@ app.post(
   uploadsMiddleware.array('photos', 10),
   async (req, res, next) => {
     try {
-      console.log('Incoming Upload Request:', req.body);
-      console.log('Uploaded Files:', req.files);
-
       if (!req.files || req.files.length === 0) {
         throw new ClientError(400, 'No file field in request');
       }
-
       const { tripId } = req.body as Partial<Photos>;
       if (!tripId) {
         throw new ClientError(400, 'tripId is a required field');
@@ -374,7 +355,6 @@ app.post('/api/photos', authMiddleware, async (req, res, next) => {
   }
 });
 
-// get images
 app.get('/api/images', async (req, res, next) => {
   try {
     const sql = `
@@ -403,7 +383,7 @@ app.get('/api/locations', authMiddleware, async (req, res, next) => {
     next(err);
   }
 });
-//
+
 /*
  * Handles paths that aren't handled by any other route handler.
  * It responds with `index.html` to support page refreshes with React Router.
