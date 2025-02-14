@@ -31,7 +31,7 @@ Try the application live at [travelogue](http://ec2-3-19-155-17.us-east-2.comput
 
 ## Preview
 
-![Trip Journal Preview](client/public/images/tripjournalpreview.png)
+![Trip Journal Preview](md.assets/tripjournalpreview.png)
 
 ## Development
 
@@ -41,24 +41,34 @@ Try the application live at [travelogue](http://ec2-3-19-155-17.us-east-2.comput
 - NPM 10 or higher
 - PostgreSQL 14 or higher
 
+
 ### Getting Started
 
-Clone the repository.
+1. Clone the repository.
 
-git clone https://github.com/ashleyavena/trip-journal
-cd trip-journal
+   ```shell
+   git clone https://github.com/ashleyavena/trip-journal
+   cd trip-journal
+   ```
 
-Install all dependencies with NPM.
+1. Install all dependencies with NPM.
 
-npm install
+   ```shell
+   npm install
+   ```
 
-Import the starting database to PostgreSQL.
+1. Import the starting database to PostgreSQL.
 
-createdb tripJournalDb
-npm run db:import
+   ```shell
+   createdb tripJournalDb
+   npm run db:import
+   ```
 
-Start the project. Once started, you can view the application by opening http://localhost:5173 in your browser.
+1. Start the project. Once started you can view the application by opening http://localhost:5173 in your browser.
 
-npm run dev
+   ```shell
+   npm run dev
+   ```
+
 
 
