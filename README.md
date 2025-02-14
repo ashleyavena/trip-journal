@@ -8,14 +8,16 @@ As someone who loves traveling & bridging cultures, I wanted to create an applic
 
 ## Technologies Used
 
-- React.js
-- Node.js
-- Tailwind.css
-- PostgreSQL
-- HTML5
-- CSS3
-- Google Maps API
-- Places API
+-TypeScript
+-React
+-Express
+-Node.js
+PostgreSQL
+TailwindCSS
+DaisyUI
+AWS - EC2, RDS, ELB
+AWS SDK for JavaScript v3
+Google Cloud API - Node.js Cloud Client Libraries
 
 ## Live Demo
 
