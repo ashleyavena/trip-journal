@@ -20,7 +20,7 @@ As someone who loves traveling & bridging cultures, I wanted to create an applic
 
 ## Live Demo
 
-Try the application live at 
+Try the application live at (http://ec2-3-19-155-17.us-east-2.compute.amazonaws.com/)
 
 ## Features
 
