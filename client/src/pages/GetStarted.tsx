@@ -1,24 +1,49 @@
 import { useState } from 'react';
 import { Link, Outlet, useNavigate } from 'react-router-dom';
 import { IoMdGlobe } from 'react-icons/io';
+import { useUser } from '../components/useUser';
 
 export function GetStarted() {
-  const [showSignIn, setShowSignIn] = useState(true); // State to toggle Sign In button visibility
+  const [showSignIn, setShowSignIn] = useState(true);
   const navigate = useNavigate();
+  const { handleSignIn } = useUser();
 
   const handleSignInClick = () => {
-    setShowSignIn(false); // Hide Sign In button when clicked
-    navigate('/sign-in'); // Redirect to Login page
+    setShowSignIn(false);
+    navigate('/sign-in');
   };
 
   const handleCreateAccountClick = () => {
-    setShowSignIn(false); // Hide Sign In button when Create Account is clicked
+    setShowSignIn(false);
   };
 
   const handleGlobeClick = () => {
-    setShowSignIn(true); // Show the Sign In button and header again when the globe is clicked
-    navigate('/'); // Navigate back to the main page (home page)
+    setShowSignIn(true);
+    navigate('/');
   };
+
+  async function handleGuestAccountClick() {
+    try {
+      const req = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          username: 'ashleyavena',
+          password: 'cherry',
+        }),
+      };
+      const response = await fetch('/api/auth/sign-in', req);
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || `fetch error ${response.status}`);
+      }
+      const { user, token } = await response.json();
+      handleSignIn(user, token);
+      navigate('/trips', { replace: true });
+    } catch (error) {
+      alert(`Error signing in ${error}`);
+    }
+  }
 
   return (
     <div className="flex flex-col items-center justify-center h-screen w-screen bg-cover bg-center bg-no-repeat p-6 bg-[url('../public/mobileLogin.jpg')] md:bg-[url('../public/mountain.jpg')]">
@@ -34,7 +59,6 @@ export function GetStarted() {
         </div>
       )}
 
-      {/* Conditionally render Sign In button */}
       {showSignIn && (
         <div className="flex flex-col items-center space-y-4 w-full max-w-sm mb-6">
           <Link
@@ -46,7 +70,15 @@ export function GetStarted() {
         </div>
       )}
 
-      {/* Create an Account Link */}
+      <div>
+        <Link
+          to="/trips"
+          className="font-light px-6 py-3 text-white rounded-md text-center w-48 hover:text-blue-700 transition"
+          onClick={handleGuestAccountClick}>
+          Continue as Guest
+        </Link>
+      </div>
+
       <div className="fixed bottom-6 w-full text-center">
         <Link
           to="/sign-up"
@@ -55,6 +87,7 @@ export function GetStarted() {
           Create an Account
         </Link>
       </div>
+
       <Outlet />
     </div>
   );

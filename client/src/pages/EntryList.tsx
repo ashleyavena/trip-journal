@@ -35,7 +35,7 @@ export function EntryList() {
     <div className="entry-list-container min-h-screen flex flex-col justify-center items-center bg-cover bg-center bg-no-repeat bg-fixed bg-[url('../public/mobileCancun.jpg')] md:bg-[url('../public/desktopHome.jpg')]">
       <div className="container ">
         <div className="flex flex-col  items-center text-center mb-20">
-          <h1 className="caveat-400 text-white mb-10 mt-[-90px]">
+          <h1 className="caveat-400 text-white mb-10 mt-[20px]">
             Relive and Wander Through Your Journeys
           </h1>
           <h3>
@@ -59,8 +59,6 @@ export function EntryList() {
   );
 }
 function EntryCard({ entry }: { entry: Entry }) {
-  console.log('Image path:', entry.photos?.[0]?.photoUrl);
-
   return (
     <li className="entry-card flex flex-col items-center ">
       <div className="column-full w-full max-w-4xl">

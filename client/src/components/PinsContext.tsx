@@ -6,6 +6,7 @@ const PinsContext = createContext<{
 }>({ pins: [], addPin: () => undefined });
 
 // hook to use PinsContext
+// eslint-disable-next-line react-refresh/only-export-components
 export const usePins = () => {
   const context = useContext(PinsContext);
   if (!context) {

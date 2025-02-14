@@ -23,7 +23,7 @@ CREATE TABLE "Trips" (
   "coverPhoto" text
 );
 
---  not null means mandatory
+--  not null = mandatory
 
 CREATE TABLE "Photos" (
   "photoId" serial PRIMARY KEY,

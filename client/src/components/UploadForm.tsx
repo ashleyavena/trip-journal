@@ -14,7 +14,7 @@ type UploadFormProps = {
 export function UploadForm({ tripId }: UploadFormProps) {
   const [imageUrls, setImageUrls] = useState<string[]>([]); // store uploaded image URLs
   const navigate = useNavigate();
-  const [fileCount, setFileCount] = useState<number>(0); // Store the number of selected files
+  const [fileCount, setFileCount] = useState<number>(0);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
@@ -60,7 +60,6 @@ export function UploadForm({ tripId }: UploadFormProps) {
         className="flex flex-col items-center gap-4">
         <input type="hidden" name="tripId" value={tripId} />
 
-        {/* Custom File Upload Button */}
         <label className="cursor-pointer bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">
           {fileCount > 0 ? `${fileCount} files selected` : 'Select Photos'}
 
