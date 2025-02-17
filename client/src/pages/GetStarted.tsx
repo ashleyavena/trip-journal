@@ -71,12 +71,11 @@ export function GetStarted() {
       )}
 
       <div>
-        <Link
-          to="/trips"
-          className="font-light px-6 py-3 text-white rounded-md text-center w-48 hover:text-blue-700 transition"
+        <div
+          className="font-light px-6 py-3 text-white rounded-md text-center w-48 hover:text-blue-700 transition cursor-pointer"
           onClick={handleGuestAccountClick}>
           Continue as Guest
-        </Link>
+        </div>
       </div>
 
       <div className="fixed bottom-6 w-full text-center">
