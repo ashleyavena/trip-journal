@@ -31,7 +31,7 @@ Try the application live at [travelogue](http://ec2-3-19-155-17.us-east-2.comput
 
 ## Preview
 
-![Trip Journal Preview](md.assets/tripjournalpreview.png)
+![Trip Journal Preview](md.assets/tripjournalpreview2.png)
 
 ## Development
 
